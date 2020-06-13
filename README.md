@@ -19,3 +19,11 @@ Unlike other editors, this plugin **treats math as part of the text itself**, ra
 Display math supports multiline editing, as shown below:
 
 ![edit display math](img/prosemirror-math_display.gif)
+
+To create a new math expression, simply enclose LaTeX math notation in dollar signs, like `$x+y=5$`.  When you finish typing, a new math node will be automatically created:
+
+![create inline math](img/prosemirror-math_insert-inline.gif)
+
+To start a display math block, create a blank line and type `$$` followed by a space.  A multiline editor will appear.  To exit the block, press `Ctrl-Space` or navigate away the mouse or arrow keys.
+
+![create display math](img/prosemirror-math_insert-display.gif)
