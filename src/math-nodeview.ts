@@ -250,22 +250,6 @@ export class MathView implements NodeView, ICursorPosObserver {
 				doc: this._node,
 				plugins: [keymap({
 					"Enter": newlineInCode,
-					"Backspace": (state: EditorState, dispatch: ((tr: Transaction) => void)) => {
-						let { to } = this._outerView.state.selection;
-						let outerState: EditorState = this._outerView.state;
-
-						// place cursor outside of math node
-						this._outerView.dispatch(
-							outerState.tr.setSelection(
-								TextSelection.create(outerState.doc, to + 1)
-							)
-						);
-
-						// must return focus to the outer view,
-						// otherwise no cursor will appear
-						this._outerView.focus();
-						return true;
-					},
 					"Ctrl-Enter": (state: EditorState, dispatch: ((tr: Transaction) => void)) => {
 						let { to } = this._outerView.state.selection;
 						let outerState: EditorState = this._outerView.state;
