@@ -36,13 +36,7 @@ export const editorSchema = new Schema({
 			}]
 		},
 		text: {
-			group: "inline",
-			inline: true,
-			toDOM(node: ProseNode) {
-				console.log("hey");
-				let dom = document.createTextNode((node as any).text.toUpperCase())
-				return dom;
-			}
+			group: "inline"
 		}
 	},
 	marks: {
