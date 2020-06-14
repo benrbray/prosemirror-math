@@ -1,3 +1,8 @@
+/*---------------------------------------------------------
+ *  Author: Benjamin R. Bray
+ *  License: MIT (see LICENSE in project root for details)
+ *--------------------------------------------------------*/
+
 // prosemirror imports
 import { EditorState, Transaction, Selection as ProseSelection, Plugin as ProsePlugin } from "prosemirror-state";
 import { DecorationSet, Decoration } from "prosemirror-view";

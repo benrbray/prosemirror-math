@@ -1,3 +1,8 @@
+/*---------------------------------------------------------
+ *  Author: Benjamin R. Bray
+ *  License: MIT (see LICENSE in project root for details)
+ *--------------------------------------------------------*/
+
 // ProseMirror imports
 import { DOMParser, NodeType } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";

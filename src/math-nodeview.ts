@@ -1,3 +1,8 @@
+/*---------------------------------------------------------
+ *  Author: Benjamin R. Bray
+ *  License: MIT (see LICENSE in project root for details)
+ *--------------------------------------------------------*/
+
 // prosemirror imports
 import { Node as ProseNode } from "prosemirror-model";
 import { EditorState, Transaction, TextSelection } from "prosemirror-state";

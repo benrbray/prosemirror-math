@@ -1,3 +1,8 @@
+/*---------------------------------------------------------
+ *  Author: Benjamin R. Bray
+ *  License: MIT (see LICENSE in project root for details)
+ *--------------------------------------------------------*/
+
 // prosemirror imports
 import { Schema, Node as ProseNode } from "prosemirror-model";
 
