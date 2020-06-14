@@ -25,15 +25,14 @@ let checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
 				start: from + pos - 1,
 				end: from + pos + node.nodeSize - 1
 			})
-
 			return false;
 		}
 		return true;
-	})
+	});
 
-	return DecorationSet.create(arg.doc, [
-		Decoration.inline(from, to, { class: "math-select" })
-	]);
+	return DecorationSet.create(arg.doc, result.map(
+		({start, end}) => Decoration.node(start, end, { class: "math-select" })
+	))
 }
 
 /**
