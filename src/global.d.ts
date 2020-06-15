@@ -9,10 +9,6 @@ declare module "prosemirror-model" {
 		// as of (3/31/20) official @types/prosemirror-model
 		// was missing Fragment.content, so we define it here
 		content: Node[];
-		//from<S extends Schema>(nodes ?: Node | Fragment<S> | ProseNode<S>[] | undefined): Fragment <S>;
-	}
-	interface NodeType {
-		hasRequiredAttrs():boolean;
 	}
 }
 
