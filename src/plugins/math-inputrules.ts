@@ -17,7 +17,7 @@ function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match:
 		// perform replacement
 		return state.tr.replaceRangeWith(
 			start, end,
-			nodeType.create(attrs, editorSchema.text(match[1]))
+			nodeType.create(attrs, nodeType.schema.text(match[1]))
 		);
 	});
 }
