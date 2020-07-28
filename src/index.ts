@@ -28,7 +28,7 @@ window.onload = function(){
 
 function insertMath(){
 	let mathType = editorSchema.nodes.inlinemath;
-	return function(state:EditorState, dispatch:((tr:Transaction)=>void)){
+	return function(state:EditorState, dispatch:((tr:Transaction)=>void)|undefined){
 		let { $from } = state.selection, index = $from.index();
 		if (!$from.parent.canReplaceWith(index, index, mathType)) {
 			return false

@@ -255,7 +255,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 				doc: this._node,
 				plugins: [keymap({
 					"Enter": newlineInCode,
-					"Ctrl-Enter": (state: EditorState, dispatch: ((tr: Transaction) => void)) => {
+					"Ctrl-Enter": (state: EditorState, dispatch: ((tr: Transaction) => void)|undefined) => {
 						let { to } = this._outerView.state.selection;
 						let outerState: EditorState = this._outerView.state;
 
