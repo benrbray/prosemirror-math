@@ -27,3 +27,9 @@ To create a new math expression, simply enclose LaTeX math notation in dollar si
 To start a display math block, create a blank line and type `$$` followed by a space.  A multiline editor will appear.  To exit the block, press `Ctrl-Space` or navigate away the mouse or arrow keys.
 
 ![create display math](img/prosemirror-math_insert-display.gif)
+
+## TODO
+
+[ ] Encapsulate available math plugins to an `options` object passed on initialization
+[ ] Smart backspace for block math
+[ ] Delete empty math block on backspace
