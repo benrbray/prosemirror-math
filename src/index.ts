@@ -17,6 +17,7 @@ import mathSelectPlugin from "./plugins/math-select";
 import { mathInputRules } from "./plugins/math-inputrules";
 import { editorSchema } from "./math-schema";
 import { MathView, ICursorPosObserver } from "./math-nodeview";
+import { mathBackspace } from "./plugins/math-backspace";
 
 ////////////////////////////////////////////////////////////
 
@@ -55,7 +56,7 @@ function initEditor(){
 			// below is the default keymap
 			"Enter" : chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
 			"Ctrl-Enter": chainCommands(newlineInCode, createParagraphNear, splitBlock),
-			"Backspace": chainCommands(deleteSelection, joinBackward, selectNodeBackward),
+			"Backspace": chainCommands(deleteSelection, mathBackspace, joinBackward, selectNodeBackward),
 			"Delete": chainCommands(deleteSelection, joinForward, selectNodeForward)
 		}),
 		mathInputRules

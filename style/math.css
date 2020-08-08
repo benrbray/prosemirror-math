@@ -28,7 +28,8 @@
 
 .math-node .math-src {
 	display: none;
-	color: rgb(132, 33, 162)
+	color: rgb(132, 33, 162);
+	tab-size: 4;
 }
 
 .math-node.ProseMirror-selectednode .math-src { display: inline; }
