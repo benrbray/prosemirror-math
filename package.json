@@ -4,7 +4,7 @@
   "description": "writeme app",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "parcel index.html"
   },
   "keywords": [
     "productivity"
@@ -14,7 +14,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "hyphen": "^1.6.2",
-    "katex": "^0.11.1",
+    "katex": "^0.12.0",
     "prosemirror-commands": "^1.1.4",
     "prosemirror-example-setup": "^1.1.2",
     "prosemirror-gapcursor": "^1.1.5",

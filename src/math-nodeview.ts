@@ -12,7 +12,7 @@ import { keymap } from "prosemirror-keymap";
 import { newlineInCode } from "prosemirror-commands";
 
 // katex
-import katex, { ParseError } from "katex";
+import katex, { ParseError, KatexOptions } from "katex";
 
 //// INLINE MATH NODEVIEW //////////////////////////////////
 
@@ -27,7 +27,7 @@ interface IMathViewOptions {
 	/** Dom element name to use for this NodeView */
 	tagName?: string;
 	/** Whether to render this node as display or inline math. */
-	displayMode?: boolean;
+	katexOptions?:KatexOptions;
 }
 
 export class MathView implements NodeView, ICursorPosObserver {
@@ -45,8 +45,8 @@ export class MathView implements NodeView, ICursorPosObserver {
 
 	// internal state
 	cursorSide: "start" | "end";
+	private _katexOptions: KatexOptions;
 	private _tagName: string;
-	private _displayMode: boolean;
 	private _isEditing: boolean;
 	private _onDestroy: (() => void) | undefined;
 
@@ -73,8 +73,8 @@ export class MathView implements NodeView, ICursorPosObserver {
 		this._isEditing = false;
 
 		// options
+		this._katexOptions = Object.assign({ globalGroup: true, throwOnError: false }, options.katexOptions);
 		this._tagName = options.tagName || this._node.type.name.replace("_", "-");
-		this._displayMode = options.displayMode || false;
 
 		// create dom representation of nodeview
 		this.dom = document.createElement(this._tagName);
@@ -127,10 +127,6 @@ export class MathView implements NodeView, ICursorPosObserver {
 	update(node: ProseNode, decorations: Decoration[]) {
 		if (!node.sameMarkup(this._node)) return false
 		this._node = node;
-
-		if (decorations.length > 1) {
-			console.log("DECORATIONS!!!", decorations);
-		}
 
 		if (this._innerView) {
 			let state = this._innerView.state;
@@ -211,7 +207,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 
 		// render katex, but fail gracefully
 		try {
-			katex.render(texString, this._mathRenderElt, { displayMode: this._displayMode });
+			katex.render(texString, this._mathRenderElt, this._katexOptions);
 			this._mathRenderElt.classList.remove("parse-error");
 			this.dom.setAttribute("title", "");
 		} catch (err) {

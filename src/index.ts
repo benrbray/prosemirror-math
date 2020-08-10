@@ -72,20 +72,24 @@ function initEditor(){
 	// create ProseMirror view
 	let nodeViews:ICursorPosObserver[] = [];
 
+	let macros:{ [cmd:string] : unknown } = {};
+
 	let view = new EditorView(editorElt, {
 		state,
 		nodeViews: {
 			"math_inline" : (node, view, getPos) => {
 				let nodeView = new MathView(
-					node, view, getPos as (() => number), { displayMode: false },
+					node, view, getPos as (() => number), 
+					{ katexOptions : { displayMode: false, macros } },
 					()=>{ nodeViews.splice(nodeViews.indexOf(nodeView)); },
-					);
+				);
 				nodeViews.push(nodeView);
 				return nodeView;
 			},
 			"math_display" : (node, view, getPos) => {
 				let nodeView = new MathView(
-					node, view, getPos as (() => number), { displayMode: true },
+					node, view, getPos as (() => number),
+					{ katexOptions : { displayMode: true, macros } },
 					() => { nodeViews.splice(nodeViews.indexOf(nodeView)); }
 				);
 				nodeViews.push(nodeView);
