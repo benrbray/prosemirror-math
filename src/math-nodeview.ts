@@ -200,6 +200,9 @@ export class MathView implements NodeView, ICursorPosObserver {
 		// empty math?
 		if (texString.length < 1) {
 			this.dom.classList.add("empty-math");
+			// clear rendered math, since this node is in an invalid state
+			while(this._mathRenderElt.firstChild){ this._mathRenderElt.firstChild.remove(); }
+			// do not render empty math
 			return;
 		} else {
 			this.dom.classList.remove("empty-math");
