@@ -1,19 +1,22 @@
 {
-  "name": "writeme",
+  "name": "prosemirror-math",
   "version": "0.0.1",
-  "description": "writeme app",
+  "description": "Schema and plugins for first-class math support in ProseMirror.",
   "main": "src/index.js",
   "scripts": {
     "dev": "parcel index.html"
   },
   "keywords": [
-    "productivity"
+    "prosemirror",
+    "math",
+    "katex",
+    "mathjax",
+    "latex"
   ],
   "author": "Benjamin R. Bray",
   "license": "MIT",
   "dependencies": {
     "core-js": "^3.6.5",
-    "hyphen": "^1.6.2",
     "katex": "^0.12.0",
     "prosemirror-commands": "^1.1.4",
     "prosemirror-example-setup": "^1.1.2",
@@ -30,7 +33,6 @@
     "prosemirror-view": "^1.15.2"
   },
   "devDependencies": {
-    "@types/hyphen": "^1.6.2",
     "@types/katex": "^0.11.0",
     "@types/prosemirror-commands": "^1.0.3",
     "@types/prosemirror-dev-tools": "^2.1.0",
@@ -43,11 +45,6 @@
     "@types/prosemirror-schema-basic": "^1.0.1",
     "@types/prosemirror-state": "^1.2.5",
     "@types/prosemirror-transform": "^1.1.1",
-    "@types/prosemirror-view": "^1.15.0",
-    "less": "^3.12.2",
-    "prosemirror-dev-tools": "^3.0.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "regenerator-runtime": "^0.13.7"
+    "@types/prosemirror-view": "^1.15.0"
   }
 }
