@@ -21,7 +21,6 @@ let checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
 	let content: Fragment = arg.selection.content().content;
 
 	let result: { start: number, end: number }[] = [];
-	console.log("selection", from, to);
 
 	content.descendants((node: ProseNode, pos: number, parent: ProseNode) => {
 		if (node.type.name == "text") { return false; }
@@ -58,7 +57,6 @@ const mathSelectPlugin: ProsePlugin = new ProsePlugin({
 		apply(tr:Transaction, oldState: EditorState) {
 			if (!tr.selection || !tr.selectionSet) { return oldState; }
 			let sel = checkSelection(tr);
-			console.log(sel);
 			return sel;
 		}
 	},
