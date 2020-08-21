@@ -37,6 +37,13 @@ To start a display math block, create a blank line and type `$$` followed by a s
 
 ![create display math](img/prosemirror-math_insert-display.gif)
 
+## Usage
+
+See the full example in `src/index.ts`.  At a minimum, you need to include:
+
+1. The schema in `src/math-schema.ts`
+2. The plugin in `src/math-plugin.ts`
+
 ## TODO
 
 - [ ] Encapsulate available math plugins to an `options` object passed on initialization
@@ -45,3 +52,4 @@ To start a display math block, create a blank line and type `$$` followed by a s
 - [ ] Smart backspace for block math
 - [ ] Delete empty math block on backspace
 - [ ] Support a render callback function, allowing use of MathJax / MathLive instead of KaTeX
+- [ ] Write as many tests as possible
