@@ -18,6 +18,7 @@ import { mathInputRules } from "./plugins/math-inputrules";
 import { editorSchema } from "./math-schema";
 import { MathView, ICursorPosObserver } from "./math-nodeview";
 import { mathBackspace } from "./plugins/math-backspace";
+import { mathPlugin } from "./math-plugin";
 
 ////////////////////////////////////////////////////////////
 
@@ -50,6 +51,7 @@ function initEditor(){
 
 	// plugins
 	let plugins:ProsePlugin[] = [
+		mathPlugin,
 		mathSelectPlugin,
 		keymap({
 			"Mod-Space" : insertMath(),
@@ -70,40 +72,5 @@ function initEditor(){
 	})
 
 	// create ProseMirror view
-	let nodeViews:ICursorPosObserver[] = [];
-
-	let macros:{ [cmd:string] : unknown } = {};
-
-	let view = new EditorView(editorElt, {
-		state,
-		nodeViews: {
-			"math_inline" : (node, view, getPos) => {
-				let nodeView = new MathView(
-					node, view, getPos as (() => number), 
-					{ katexOptions : { displayMode: false, macros } },
-					()=>{ nodeViews.splice(nodeViews.indexOf(nodeView)); },
-				);
-				nodeViews.push(nodeView);
-				return nodeView;
-			},
-			"math_display" : (node, view, getPos) => {
-				let nodeView = new MathView(
-					node, view, getPos as (() => number),
-					{ katexOptions : { displayMode: true, macros } },
-					() => { nodeViews.splice(nodeViews.indexOf(nodeView)); }
-				);
-				nodeViews.push(nodeView);
-				return nodeView;
-			},
-		},
-		dispatchTransaction: (tr: Transaction):void => {
-			// update 
-			for (let mathView of nodeViews){
-				mathView.updateCursorPos(view.state);
-			}
-
-			// apply transaction
-			view.updateState(view.state.apply(tr));
-		}
-	})
+	let view = new EditorView(editorElt, { state })
 }
