@@ -41,8 +41,16 @@ To start a display math block, create a blank line and type `$$` followed by a s
 
 See the full example in `src/index.ts`.  At a minimum, you need to include:
 
-1. The schema in `src/math-schema.ts`
-2. The plugin in `src/math-plugin.ts`
+1. The `math_inline` and `math_display` schema found in `src/math-schema.ts`
+2. The `mathPlugin` ProseMirror plugin found in `src/math-plugin.ts`
+
+There are also several optional features you can enable:
+
+3. (work in progress) Use `mathBackspace` to backspace "into" a math node, rather than deleting the entire node.
+4. *(work in progress--may be quite slow!)* Use the `mathSelectPlugin` to make math node selections less visually jarring.
+5. Use `mathInputRules` to automatically create new math blocks when typing:
+	- Create a new inline math node by typing a dollar-sign-delimited expression like `$\int_a^b f(x) dx$` followed by a space.
+	- Create a new block math node by typing `$$` followed by a space.
 
 ## TODO
 
