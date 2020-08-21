@@ -26,7 +26,7 @@ let checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
 		if (node.type.name == "text") { return false; }
 		if (node.type.name.startsWith("math_")) {
 			result.push({
-				start: from + pos - 1,
+				start: Math.max(from + pos - 1, 0),
 				end: from + pos + node.nodeSize - 1
 			})
 			return false;
