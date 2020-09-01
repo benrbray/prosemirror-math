@@ -5,11 +5,11 @@
 
 // prosemirror imports
 import { Node as ProseNode } from "prosemirror-model";
-import { EditorState, Transaction, TextSelection } from "prosemirror-state";
+import { EditorState, Transaction, TextSelection, NodeSelection } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 import { StepMap } from "prosemirror-transform";
 import { keymap } from "prosemirror-keymap";
-import { newlineInCode } from "prosemirror-commands";
+import { newlineInCode, chainCommands, deleteSelection, liftEmptyBlock } from "prosemirror-commands";
 
 // katex
 import katex, { ParseError, KatexOptions } from "katex";
@@ -257,6 +257,16 @@ export class MathView implements NodeView, ICursorPosObserver {
 						if(dispatch){ dispatch(state.tr.insertText("\t")); }
 						return true;
 					},
+					"Backspace": chainCommands(deleteSelection, (state, dispatch, tr_inner) => {
+						// default backspace behavior for non-empty selections
+						if(!state.selection.empty) { return false; }
+						// default backspace behavior when math node is non-empty
+						if(this._node.textContent.length > 0){ return false; }
+						// otherwise, we want to delete the empty math node and focus the outer view
+						this._outerView.dispatch(this._outerView.state.tr.insertText(""));
+						this._outerView.focus();
+						return true;
+					}),
 					"Enter": newlineInCode,
 					"Ctrl-Enter": (state: EditorState, dispatch: ((tr: Transaction) => void)|undefined) => {
 						let { to } = this._outerView.state.selection;
