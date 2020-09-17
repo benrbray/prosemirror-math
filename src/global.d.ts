@@ -22,9 +22,3 @@ declare module "prosemirror-model" {
 		posAtIndex(index:number, depth?:number):number;
 	}
 }
-
-export type ProseCommand = (
-	state:EditorState, 
-	dispatch?:((tr:Transaction)=>void)|undefined, 
-	view?:EditorView
-) => boolean;
