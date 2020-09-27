@@ -3,7 +3,7 @@ import { editorSchema } from "../math-schema";
 import { NodeType } from "prosemirror-model";
 import { NodeSelection } from "prosemirror-state";
 
-function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
+export function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
 	return new InputRule(pattern, (state, match, start, end) => {
 		let $start = state.doc.resolve(start);
 		let index = $start.index();
@@ -22,7 +22,7 @@ function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match:
 	});
 }
 
-function blockInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
+export function blockInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
 	return new InputRule(pattern, (state, match, start, end) => {
 		let $start = state.doc.resolve(start)
 		let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs
