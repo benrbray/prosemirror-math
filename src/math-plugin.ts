@@ -16,12 +16,12 @@ interface IMathPluginState {
 	activeNodeViews: MathView[];
 }
 
-/** 
+/**
  * Returns a function suitable for passing as a field in `EditorProps.nodeViews`.
  * @param displayMode TRUE for block math, FALSE for inline math.
  * @see https://prosemirror.net/docs/ref/#view.EditorProps.nodeViews
  */
-function createMathView(displayMode:boolean){
+export function createMathView(displayMode:boolean){
 	return (node: ProseNode, view: EditorView, getPos:boolean|(()=>number)):MathView => {
 		/** @todo is this necessary?
 		* Docs says that for any function proprs, the current plugin instance
@@ -33,8 +33,8 @@ function createMathView(displayMode:boolean){
 
 		// set up NodeView
 		let nodeView = new MathView(
-			node, view, getPos as (() => number), 
-			{ katexOptions : { displayMode, macros: pluginState.macros } },
+			node, view, getPos as (() => number),
+			{ tagName: displayMode ? 'math-display' : 'math-inline', katexOptions : { displayMode, macros: pluginState.macros } },
 			()=>{ nodeViews.splice(nodeViews.indexOf(nodeView)); },
 		);
 

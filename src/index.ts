@@ -18,17 +18,17 @@ import { mathInputRules } from "./plugins/math-inputrules";
 import { editorSchema } from "./math-schema";
 import { MathView, ICursorPosObserver } from "./math-nodeview";
 import { mathBackspace } from "./plugins/math-backspace";
-import { mathPlugin } from "./math-plugin";
+import { mathPlugin, createMathView } from "./math-plugin";
 
-////////////////////////////////////////////////////////////
+export const mathPlugins: ProsePlugin[] = [
+  mathPlugin,
+  mathSelectPlugin,
+  mathInputRules,
+]
 
-window.onload = function(){
-	initEditor();
-}
+export { createMathView };
 
-//// EDITOR SETUP //////////////////////////////////////////
-
-function insertMath(){
+export function insertMath(){
 	let mathType = editorSchema.nodes.inlinemath;
 	return function(state:EditorState, dispatch:((tr:Transaction)=>void)|undefined){
 		let { $from } = state.selection, index = $from.index();
@@ -44,33 +44,31 @@ function insertMath(){
 	}
 }
 
-function initEditor(){
-	// get editor element
-	let editorElt = document.getElementById("editor");
-	if(!editorElt){ throw Error("missing #editor element"); }
+// function initEditor(){
+// 	// get editor element
+// 	let editorElt = document.getElementById("editor");
+// 	if(!editorElt){ throw Error("missing #editor element"); }
 
-	// plugins
-	let plugins:ProsePlugin[] = [
-		mathPlugin,
-		mathSelectPlugin,
-		keymap({
-			"Mod-Space" : insertMath(),
-			// below is the default keymap
-			"Enter" : chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
-			"Ctrl-Enter": chainCommands(newlineInCode, createParagraphNear, splitBlock),
-			"Backspace": chainCommands(deleteSelection, mathBackspace, joinBackward, selectNodeBackward),
-			"Delete": chainCommands(deleteSelection, joinForward, selectNodeForward)
-		}),
-		mathInputRules
-	];
+// 	// plugins
+// 	let plugins:ProsePlugin[] = [
+//     ...mathPlugins,
+// 		keymap({
+// 			"Mod-Space" : insertMath(),
+// 			// below is the default keymap
+// 			"Enter" : chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
+// 			"Ctrl-Enter": chainCommands(newlineInCode, createParagraphNear, splitBlock),
+// 			"Backspace": chainCommands(deleteSelection, mathBackspace, joinBackward, selectNodeBackward),
+// 			"Delete": chainCommands(deleteSelection, joinForward, selectNodeForward)
+// 		}),
+// 	];
 
-	// create ProseMirror state
-	let state = EditorState.create({
-		schema: editorSchema,
-		doc: DOMParser.fromSchema(editorSchema).parse(document.getElementById("editor-content") as HTMLElement),
-		plugins: plugins,
-	})
+// 	// create ProseMirror state
+// 	let state = EditorState.create({
+// 		schema: editorSchema,
+// 		doc: DOMParser.fromSchema(editorSchema).parse(document.getElementById("editor-content") as HTMLElement),
+// 		plugins: plugins,
+// 	})
 
-	// create ProseMirror view
-	let view = new EditorView(editorElt, { state })
-}
+// 	// create ProseMirror view
+// 	let view = new EditorView(editorElt, { state })
+// }

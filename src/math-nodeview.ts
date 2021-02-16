@@ -38,7 +38,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 	private _getPos: (() => number);
 
 	// nodeview dom
-	dom: HTMLElement;
+	dom?: HTMLElement;
 	private _mathRenderElt: HTMLElement | undefined;
 	private _mathSrcElt: HTMLElement | undefined;
 	private _innerView: EditorView | undefined;
@@ -53,9 +53,9 @@ export class MathView implements NodeView, ICursorPosObserver {
 	// == Lifecycle ===================================== //
 
 	/**
-	 * @param onDestroy Callback for when this NodeView is destroyed.  
+	 * @param onDestroy Callback for when this NodeView is destroyed.
 	 *     This NodeView should unregister itself from the list of ICursorPosObservers.
-	 * 
+	 *
 	 * Math Views support the following options:
 	 * @option displayMode If TRUE, will render math in display mode, otherwise in inline mode.
 	 * @option tagName HTML tag name to use for this NodeView.  If none is provided,
@@ -89,7 +89,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 		this._mathSrcElt.classList.add("math-src");
 		this.dom.appendChild(this._mathSrcElt);
 
-		// ensure 
+		// ensure
 		this.dom.addEventListener("click", () => this.ensureFocus());
 
 		// render initial content
@@ -168,12 +168,12 @@ export class MathView implements NodeView, ICursorPosObserver {
 	// == Events ===================================== //
 
 	selectNode() {
-		this.dom.classList.add("ProseMirror-selectednode");
+		this.dom?.classList.add("ProseMirror-selectednode");
 		if (!this._isEditing) { this.openEditor(); }
 	}
 
 	deselectNode() {
-		this.dom.classList.remove("ProseMirror-selectednode");
+		this.dom?.classList.remove("ProseMirror-selectednode");
 		if (this._isEditing) { this.closeEditor(); }
 	}
 
@@ -199,25 +199,25 @@ export class MathView implements NodeView, ICursorPosObserver {
 
 		// empty math?
 		if (texString.length < 1) {
-			this.dom.classList.add("empty-math");
+			this.dom?.classList.add("empty-math");
 			// clear rendered math, since this node is in an invalid state
 			while(this._mathRenderElt.firstChild){ this._mathRenderElt.firstChild.remove(); }
 			// do not render empty math
 			return;
 		} else {
-			this.dom.classList.remove("empty-math");
+			this.dom?.classList.remove("empty-math");
 		}
 
 		// render katex, but fail gracefully
 		try {
 			katex.render(texString, this._mathRenderElt, this._katexOptions);
 			this._mathRenderElt.classList.remove("parse-error");
-			this.dom.setAttribute("title", "");
+			this.dom?.setAttribute("title", "");
 		} catch (err) {
 			if (err instanceof ParseError) {
 				console.error(err);
 				this._mathRenderElt.classList.add("parse-error");
-				this.dom.setAttribute("title", err.toString());
+				this.dom?.setAttribute("title", err.toString());
 			} else {
 				throw err;
 			}
@@ -306,7 +306,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 
 	/**
 	 * Called when the inner ProseMirror editor should close.
-	 * 
+	 *
 	 * @param render Optionally update the rendered math after closing. (which
 	 *    is generally what we want to do, since the user is done editing!)
 	 */
