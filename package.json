@@ -2,6 +2,7 @@
   "name": "prosemirror-math",
   "version": "0.0.1",
   "description": "Schema and plugins for first-class math support in ProseMirror.",
+  "repository": "github:benrbray/prosemirror-math",
   "main": "src/index.js",
   "scripts": {
     "dev": "parcel index.html"
