@@ -109,7 +109,8 @@ export class MathView implements NodeView, ICursorPosObserver {
 			this._mathSrcElt.remove();
 			delete this._mathSrcElt;
 		}
-		delete this.dom;
+		
+		this.dom.remove();
 	}
 
 	/**
