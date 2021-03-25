@@ -45,7 +45,12 @@ math-inline .math-render {
 	cursor:pointer;
 }
 
-math-inline .math-src .ProseMirror { display: inline; }
+math-inline .math-src .ProseMirror {
+	display: inline;
+	/* Necessary to fix FireFox bug with contenteditable, https://bugzilla.mozilla.org/show_bug.cgi?id=1252108 */
+	border-right: 1px solid transparent;
+	border-left: 1px solid transparent;
+}
 
 math-inline .math-src::after, math-inline .math-src::before {
 	content: "$";

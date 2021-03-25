@@ -9,10 +9,12 @@ import { EditorState, Transaction, TextSelection, NodeSelection } from "prosemir
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 import { StepMap } from "prosemirror-transform";
 import { keymap } from "prosemirror-keymap";
-import { newlineInCode, chainCommands, deleteSelection, liftEmptyBlock } from "prosemirror-commands";
+import { newlineInCode, chainCommands, deleteSelection, liftEmptyBlock, Command } from "prosemirror-commands";
 
 // katex
 import katex, { ParseError, KatexOptions } from "katex";
+import { nudgeCursorBackCmd, nudgeCursorForwardCmd } from "./commands/move-cursor-cmd";
+import { collapseMathCmd } from "./commands/collapse-math-cmd";
 
 //// INLINE MATH NODEVIEW //////////////////////////////////
 
@@ -269,22 +271,11 @@ export class MathView implements NodeView, ICursorPosObserver {
 						return true;
 					}),
 					"Enter": newlineInCode,
-					"Ctrl-Enter": (state: EditorState, dispatch: ((tr: Transaction) => void)|undefined) => {
-						let { to } = this._outerView.state.selection;
-						let outerState: EditorState = this._outerView.state;
-
-						// place cursor outside of math node
-						this._outerView.dispatch(
-							outerState.tr.setSelection(
-								TextSelection.create(outerState.doc, to)
-							)
-						);
-
-						// must return focus to the outer view,
-						// otherwise no cursor will appear
-						this._outerView.focus();
-						return true;
-					}
+					"Ctrl-Enter" : collapseMathCmd(this._outerView, +1, false),
+					"ArrowLeft"  : collapseMathCmd(this._outerView, -1, true),
+					"ArrowRight" : collapseMathCmd(this._outerView, +1, true),
+					"ArrowUp"    : collapseMathCmd(this._outerView, -1, true),
+					"ArrowDown"  : collapseMathCmd(this._outerView, +1, true),
 				})]
 			}),
 			dispatchTransaction: this.dispatchInner.bind(this)
