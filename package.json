@@ -7,14 +7,14 @@
   "module": "dist/index.es.js",
   "files": [
     "dist",
-    "definitions",
     "style"
   ],
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -cw",
-    "clean": "npx del dist"
+    "clean": "npx del dist",
+    "prepare": "npm run clean; npm run build"
   },
   "keywords": [
     "prosemirror",
