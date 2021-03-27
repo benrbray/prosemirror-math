@@ -112,5 +112,3 @@ export function extendMathSchemaSpec<N extends string, M extends string>(
 	let marks = { ...baseSpec.marks, ...mathSchemaSpec.marks }
 	return { nodes, marks, topNode : baseSpec.topNode };
 }
-
-extendMathSchemaSpec(mathSchemaSpec);
