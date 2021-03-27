@@ -437,23 +437,6 @@ const mathSchemaSpec = createSchemaSpec({
 function createMathSchema() {
     return new prosemirrorModel.Schema(mathSchemaSpec);
 }
-/**
- * Create a new SchemaSpec by adding math nodes to an existing spec.
-
- * @deprecated This function is included for demonstration/testing only. For the
- *     time being, I highly recommend adding the math nodes manually to your own
- *     ProseMirror spec to avoid unexpected interactions between the math nodes
- *     and your own spec.  Use the example spec for reference.
- *
- * @param baseSpec The SchemaSpec to extend.  Must specify a `marks` field, and
- *     must be a raw object (not an OrderedMap).
- */
-function extendMathSchemaSpec(baseSpec) {
-    let nodes = Object.assign(Object.assign({}, baseSpec.nodes), mathSchemaSpec.nodes);
-    let marks = Object.assign(Object.assign({}, baseSpec.marks), mathSchemaSpec.marks);
-    return { nodes, marks, topNode: baseSpec.topNode };
-}
-extendMathSchemaSpec(mathSchemaSpec);
 
 const mathBackspace = (state, dispatch) => {
     // check node before
@@ -487,16 +470,16 @@ const mathBackspace = (state, dispatch) => {
 ////////////////////////////////////////////////////////////
 // ---- Inline Input Rules ------------------------------ //
 // simple input rule for inline math
-const INPUTRULE_INLINE_DOLLARS = /\$(.+)\$/;
+const REGEX_INLINE_MATH_DOLLARS = /\$(.+)\$/;
 // negative lookbehind regex notation allows for escaped \$ delimiters
 // (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
 // (see https://javascript.info/regexp-lookahead-lookbehind)
-const INPUTRULE_INLINE_DOLLARS_ESCAPED = /(?<!\\)\$(.+)(?<!\\)\$/;
+const REGEX_INLINE_MATH_DOLLARS_ESCAPED = /(?<!\\)\$(.+)(?<!\\)\$/;
 // ---- Block Input Rules ------------------------------- //
 // simple inputrule for block math
-const INPUTRULE_BLOCK_DOLLARS = /^\$\$\s+$/;
+const REGEX_BLOCK_MATH_DOLLARS = /^\$\$\s+$/;
 ////////////////////////////////////////////////////////////
-function inlineInputRule(pattern, nodeType, getAttrs) {
+function makeInlineMathInputRule(pattern, nodeType, getAttrs) {
     return new prosemirrorInputrules.InputRule(pattern, (state, match, start, end) => {
         let $start = state.doc.resolve(start);
         let index = $start.index();
@@ -511,7 +494,7 @@ function inlineInputRule(pattern, nodeType, getAttrs) {
         return state.tr.replaceRangeWith(start, end, nodeType.create(attrs, nodeType.schema.text(match[1])));
     });
 }
-function blockInputRule(pattern, nodeType, getAttrs) {
+function makeBlockMathInputRule(pattern, nodeType, getAttrs) {
     return new prosemirrorInputrules.InputRule(pattern, (state, match, start, end) => {
         let $start = state.doc.resolve(start);
         let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs;
@@ -535,7 +518,7 @@ function blockInputRule(pattern, nodeType, getAttrs) {
  * @param arg Should be either a Transaction or an EditorState,
  *     although any object with `selection` and `doc` will work.
  */
-let checkSelection = (arg) => {
+const checkSelection = (arg) => {
     let { from, to } = arg.selection;
     let content = arg.selection.content().content;
     let result = [];
@@ -582,20 +565,15 @@ const mathSelectPlugin = new prosemirrorState.Plugin({
     }
 });
 
-var mathSelect = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	'default': mathSelectPlugin
-});
-
-exports.INPUTRULE_BLOCK_DOLLARS = INPUTRULE_BLOCK_DOLLARS;
-exports.INPUTRULE_INLINE_DOLLARS = INPUTRULE_INLINE_DOLLARS;
-exports.INPUTRULE_INLINE_DOLLARS_ESCAPED = INPUTRULE_INLINE_DOLLARS_ESCAPED;
 exports.MathView = MathView;
-exports.blockInputRule = blockInputRule;
+exports.REGEX_BLOCK_MATH_DOLLARS = REGEX_BLOCK_MATH_DOLLARS;
+exports.REGEX_INLINE_MATH_DOLLARS = REGEX_INLINE_MATH_DOLLARS;
+exports.REGEX_INLINE_MATH_DOLLARS_ESCAPED = REGEX_INLINE_MATH_DOLLARS_ESCAPED;
 exports.createMathSchema = createMathSchema;
-exports.inlineInputRule = inlineInputRule;
+exports.makeBlockMathInputRule = makeBlockMathInputRule;
+exports.makeInlineMathInputRule = makeInlineMathInputRule;
 exports.mathBackspace = mathBackspace;
 exports.mathPlugin = mathPlugin;
 exports.mathSchemaSpec = mathSchemaSpec;
-exports.mathSelectPlugin = mathSelect;
+exports.mathSelectPlugin = mathSelectPlugin;
 //# sourceMappingURL=index.js.map
