@@ -1,0 +1,25 @@
+body {
+	font-family: "Segoe UI", "Open Sans", sans-serif;
+}
+
+article {
+	position: relative;
+	max-width: 600px;
+	margin: 0 auto;
+	text-rendering: optimizeLegibility;
+}
+
+#editor .ProseMirror:focus {
+	outline: none;
+}
+
+:root {
+	--default-line-height: 1.3em;
+}
+
+p {
+	text-align: justify;
+	word-break: break-word;
+	white-space: break-spaces;
+	line-height: var(--default-line-height);
+}
