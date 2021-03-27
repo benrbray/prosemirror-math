@@ -1,3 +1,4 @@
+# remember to keep this in sync with .npmignore!
 node_modules
 .cache
 .vscode
