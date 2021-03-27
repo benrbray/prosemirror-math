@@ -6,6 +6,7 @@ import { EditorView } from "prosemirror-view";
  * A ProseMirror command for determining whether to exit a math block, based on
  * specific conditions.  Normally called when the user has 
  * 
+ * @param outerView The main ProseMirror EditorView containing this math node.
  * @param dir Used to indicate desired cursor position upon closing a math node.
  *     When set to -1, cursor will be placed BEFORE the math node.
  *     When set to +1, cursor will be placed AFTER the math node.
