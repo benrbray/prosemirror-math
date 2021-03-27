@@ -5,7 +5,7 @@ import { keymap } from 'prosemirror-keymap';
 import { chainCommands, deleteSelection, newlineInCode } from 'prosemirror-commands';
 import katex, { ParseError } from 'katex';
 import { Schema } from 'prosemirror-model';
-import { inputRules, InputRule } from 'prosemirror-inputrules';
+import { InputRule } from 'prosemirror-inputrules';
 
 /**
  * A ProseMirror command for determining whether to exit a math block, based on
@@ -375,7 +375,12 @@ const mathPlugin = new Plugin(mathPluginSpec);
  *  License: MIT (see LICENSE in project root for details)
  *--------------------------------------------------------*/
 ////////////////////////////////////////////////////////////
-const editorSchema = new Schema({
+// force typescript to infer generic type arguments for SchemaSpec
+function createSchemaSpec(spec) {
+    return spec;
+}
+// bare minimum ProseMirror schema for working with math nodes
+const mathSchemaSpec = createSchemaSpec({
     nodes: {
         // :: NodeSpec top-level document node
         doc: {
@@ -418,6 +423,29 @@ const editorSchema = new Schema({
         }
     }
 });
+/**
+ * Use the prosemirror-math default SchemaSpec to create a new Schema.
+ */
+function createMathSchema() {
+    return new Schema(mathSchemaSpec);
+}
+/**
+ * Create a new SchemaSpec by adding math nodes to an existing spec.
+
+ * @deprecated This function is included for demonstration/testing only. For the
+ *     time being, I highly recommend adding the math nodes manually to your own
+ *     ProseMirror spec to avoid unexpected interactions between the math nodes
+ *     and your own spec.  Use the example spec for reference.
+ *
+ * @param baseSpec The SchemaSpec to extend.  Must specify a `marks` field, and
+ *     must be a raw object (not an OrderedMap).
+ */
+function extendMathSchemaSpec(baseSpec) {
+    let nodes = Object.assign(Object.assign({}, baseSpec.nodes), mathSchemaSpec.nodes);
+    let marks = Object.assign(Object.assign({}, baseSpec.marks), mathSchemaSpec.marks);
+    return { nodes, marks, topNode: baseSpec.topNode };
+}
+extendMathSchemaSpec(mathSchemaSpec);
 
 const mathBackspace = (state, dispatch) => {
     // check node before
@@ -444,6 +472,22 @@ const mathBackspace = (state, dispatch) => {
     return false;
 };
 
+/*---------------------------------------------------------
+ *  Author: Benjamin R. Bray
+ *  License: MIT (see LICENSE in project root for details)
+ *--------------------------------------------------------*/
+////////////////////////////////////////////////////////////
+// ---- Inline Input Rules ------------------------------ //
+// simple input rule for inline math
+const INPUTRULE_INLINE_DOLLARS = /\$(.+)\$/;
+// negative lookbehind regex notation allows for escaped \$ delimiters
+// (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
+// (see https://javascript.info/regexp-lookahead-lookbehind)
+const INPUTRULE_INLINE_DOLLARS_ESCAPED = /(?<!\\)\$(.+)(?<!\\)\$/;
+// ---- Block Input Rules ------------------------------- //
+// simple inputrule for block math
+const INPUTRULE_BLOCK_DOLLARS = /^\$\$\s+$/;
+////////////////////////////////////////////////////////////
 function inlineInputRule(pattern, nodeType, getAttrs) {
     return new InputRule(pattern, (state, match, start, end) => {
         let $start = state.doc.resolve(start);
@@ -471,16 +515,6 @@ function blockInputRule(pattern, nodeType, getAttrs) {
         return tr.setSelection(NodeSelection.create(tr.doc, tr.mapping.map($start.pos - 1)));
     });
 }
-const mathInputRules = inputRules({
-    rules: [
-        // negative lookbehind regex notation for escaped \$ delimiters
-        // (see https://javascript.info/regexp-lookahead-lookbehind)
-        inlineInputRule(/(?<!\\)\$(.+)(?<!\\)\$/, editorSchema.nodes.math_inline),
-        // simpler version without the option to escape \$
-        //inlineInputRule(/\$(.+)\$/, editorSchema.nodes.math_inline),
-        blockInputRule(/^\$\$\s+$/, editorSchema.nodes.math_display)
-    ]
-});
 
 /*---------------------------------------------------------
  *  Author: Benjamin R. Bray
@@ -545,5 +579,5 @@ var mathSelect = /*#__PURE__*/Object.freeze({
 	'default': mathSelectPlugin
 });
 
-export { MathView, editorSchema, mathBackspace, mathInputRules, mathPlugin, mathSelect as mathSelectPlugin };
+export { INPUTRULE_BLOCK_DOLLARS, INPUTRULE_INLINE_DOLLARS, INPUTRULE_INLINE_DOLLARS_ESCAPED, MathView, blockInputRule, createMathSchema, inlineInputRule, mathBackspace, mathPlugin, mathSchemaSpec, mathSelect as mathSelectPlugin };
 //# sourceMappingURL=index.es.js.map

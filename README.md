@@ -52,7 +52,36 @@ There are also several optional features you can enable:
 	- Create a new inline math node by typing a dollar-sign-delimited expression like `$\int_a^b f(x) dx$` followed by a space.
 	- Create a new block math node by typing `$$` followed by a space.
 
+## Interacting with Math Nodes
+
+This section describes the expected behavior of math nodes created with `prosemirror-math`.  Since ProseMirror relies on `contenteditable`, which behaves differently in each browser, you might experience buggy behavior in your browser of choice.  If you notice something unusual, please file a bug report!
+
+When the cursor is immediately to the left of a math node...
+
+* Pressing `RIGHT` should expand the math node and place the cursor in the LEFTMOST inner position
+
+When the cursor is immediately to the right of a math node...
+
+* Pressing `LEFT` should expand the math node and place the cursor in the RIGHTMOST inner position
+
+When the cursor is inside an INLINE math node...
+
+* Pressing `UP` (or `LEFT` when the cursor is the LEFTMOST inner position) should close the math node and place the cursor immediately BEFORE the node
+* Pressing `DOWN` (or `RIGHT` when the cursor is in the RIGHTMOST inner position) should close the math node and place the cursor immediately AFTER the node
+* Pressing `ENTER`, `CTRL+ENTER`, or `ESC` should close the math node and place the cursor immediately AFTER the node
+
+When the cursor is inside a BLOCK math node...
+
+* Pressing `LEFT` when the cursor is in the LEFTMOST inner position should close the math node and place the cursor immediately BEFORE the unexpanded node
+* Pressing `RIGHT` when the cursor is in the RIGHTMOST inner position should close the math node and place the cursor immediately AFTER the unexpanded node
+* Pressing `UP` when the cursor is on the TOPMOST inner line should close the math node and place the cursor immediately BEFORE the unexpanded node
+* Pressing `DOWN` when the cursor is in the BOTTOMMOST inner line should close the math node and place the cursor immediately AFTER the unexpanded math node
+* Pressing `ENTER` should create a new line
+* Pressing `CTRL+ENTER` or `ESC` should close the math node and place the cursor immediately AFTER the node
+
 ## TODO
+
+In no particular order:
 
 - [ ] Encapsulate available math plugins to an `options` object passed on initialization
 - [ ] Wrap nodeViews + katexMacros as a ProseMirror plugin object

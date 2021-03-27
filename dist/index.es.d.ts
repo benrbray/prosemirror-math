@@ -1,10 +1,9 @@
-/// <reference types="prosemirror-state" />
 /*---------------------------------------------------------
 *  Author: Benjamin R. Bray
 *  License: MIT (see LICENSE in project root for details)
 *--------------------------------------------------------*/
 // prosemirror imports
-import { Schema } from "prosemirror-model";
+import { MarkSpec, NodeSpec, Schema, SchemaSpec, NodeType } from "prosemirror-model";
 import { Node as ProseNode } from "prosemirror-model";
 import { EditorState, Transaction } from "prosemirror-state";
 import { Plugin as ProsePlugin } from "prosemirror-state";
@@ -12,6 +11,11 @@ import { NodeView, EditorView, Decoration } from "prosemirror-view";
 // katex
 import { KatexOptions } from "katex";
 import { Command as ProseCommand } from "prosemirror-commands";
+/*---------------------------------------------------------
+*  Author: Benjamin R. Bray
+*  License: MIT (see LICENSE in project root for details)
+*--------------------------------------------------------*/
+import { InputRule } from "prosemirror-inputrules";
 //// INLINE MATH NODEVIEW //////////////////////////////////
 interface ICursorPosObserver {
     /** indicates on which side cursor should appear when this node is selected */
@@ -88,9 +92,50 @@ interface IMathPluginState {
 }
 declare const mathPlugin: ProsePlugin<IMathPluginState, any>;
 ////////////////////////////////////////////////////////////
-declare const editorSchema: Schema<"doc" | "paragraph" | "math_inline" | "math_display" | "text", "math_select">;
+/**
+ * Borrowed from ProseMirror typings, modified to exclude OrderedMaps in spec,
+ * in order to help with the schema-building functions below.
+ *
+ * NOTE:  TypeScript's typings for the spread operator { ...a, ...b } are only
+ * an approximation to the true type, and have difficulty with optional fields.
+ * So, unlike the SchemaSpec type, the `marks` field is NOT optional here.
+ *
+ * function example<T extends string>(x: { [name in T]: string; } | null) {
+ *     const s = { ...x }; // inferred to have type `{}`.
+ * }
+ *
+ * @see https://github.com/microsoft/TypeScript/issues/10727
+ */
+interface SchemaSpecJson<N extends string = any, M extends string = any> extends SchemaSpec<N, M> {
+    nodes: {
+        [name in N]: NodeSpec;
+    };
+    marks: {
+        [name in M]: MarkSpec;
+    };
+    topNode?: string | null;
+}
+// bare minimum ProseMirror schema for working with math nodes
+declare const mathSchemaSpec: SchemaSpecJson<"doc" | "paragraph" | "math_inline" | "math_display" | "text", "math_select">;
+/**
+ * Use the prosemirror-math default SchemaSpec to create a new Schema.
+ */
+declare function createMathSchema(): Schema<"doc" | "paragraph" | "math_inline" | "math_display" | "text", "math_select">;
 declare const mathBackspace: ProseCommand;
-declare const mathInputRules: import("prosemirror-state").Plugin<unknown, any>;
+////////////////////////////////////////////////////////////
+// ---- Inline Input Rules ------------------------------ //
+// simple input rule for inline math
+declare const INPUTRULE_INLINE_DOLLARS: RegExp;
+// negative lookbehind regex notation allows for escaped \$ delimiters
+// (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
+// (see https://javascript.info/regexp-lookahead-lookbehind)
+declare const INPUTRULE_INLINE_DOLLARS_ESCAPED: RegExp;
+// ---- Block Input Rules ------------------------------- //
+// simple inputrule for block math
+declare const INPUTRULE_BLOCK_DOLLARS: RegExp;
+////////////////////////////////////////////////////////////
+declare function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
+declare function blockInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
 declare namespace mathSelectPlugin {
     /**
      * Due to the internals of KaTeX, by default, selecting rendered
@@ -104,5 +149,5 @@ declare namespace mathSelectPlugin {
      */
     const mathSelectPlugin: ProsePlugin;
 }
-export { MathView, ICursorPosObserver, mathPlugin, editorSchema, mathBackspace, mathInputRules, mathSelectPlugin };
-//# sourceMappingURL=index.d.ts.map
+export { MathView, ICursorPosObserver, mathPlugin, mathSchemaSpec, createMathSchema, mathBackspace, INPUTRULE_INLINE_DOLLARS, INPUTRULE_INLINE_DOLLARS_ESCAPED, INPUTRULE_BLOCK_DOLLARS, inlineInputRule, blockInputRule, mathSelectPlugin };
+//# sourceMappingURL=index.es.d.ts.map
