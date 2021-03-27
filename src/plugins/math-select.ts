@@ -16,7 +16,7 @@ import { Fragment, Node as ProseNode } from "prosemirror-model";
  * @param arg Should be either a Transaction or an EditorState,
  *     although any object with `selection` and `doc` will work.
  */
-let checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
+const checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
 	let { from, to } = arg.selection;
 	let content: Fragment = arg.selection.content().content;
 
@@ -49,7 +49,7 @@ let checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
  * 
  * @todo (6/13/20) math selection rectangles are not quite even with text
  */
-const mathSelectPlugin: ProsePlugin = new ProsePlugin({
+export const mathSelectPlugin: ProsePlugin = new ProsePlugin({
 	state: {
 		init(config: Object, partialState: EditorState) {
 			return checkSelection(partialState);
@@ -64,5 +64,3 @@ const mathSelectPlugin: ProsePlugin = new ProsePlugin({
 		decorations: (state:EditorState) => { return mathSelectPlugin.getState(state); },
 	}
 });
-
-export default mathSelectPlugin;

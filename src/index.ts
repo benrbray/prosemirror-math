@@ -13,4 +13,4 @@ export { mathBackspace } from "./plugins/math-backspace";
 export * from "./plugins/math-inputrules";
 
 // optional / experimental plugins
-export * as mathSelectPlugin from "./plugins/math-select";
+export { mathSelectPlugin } from "./plugins/math-select";

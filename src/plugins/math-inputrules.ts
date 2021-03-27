@@ -12,21 +12,21 @@ import { NodeSelection } from "prosemirror-state";
 // ---- Inline Input Rules ------------------------------ //
 
 // simple input rule for inline math
-export const INPUTRULE_INLINE_DOLLARS:RegExp = /\$(.+)\$/;
+export const REGEX_INLINE_MATH_DOLLARS:RegExp = /\$(.+)\$/;
 
 // negative lookbehind regex notation allows for escaped \$ delimiters
 // (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
 // (see https://javascript.info/regexp-lookahead-lookbehind)
-export const INPUTRULE_INLINE_DOLLARS_ESCAPED:RegExp = /(?<!\\)\$(.+)(?<!\\)\$/;
+export const REGEX_INLINE_MATH_DOLLARS_ESCAPED:RegExp = /(?<!\\)\$(.+)(?<!\\)\$/;
 
 // ---- Block Input Rules ------------------------------- //
 
 // simple inputrule for block math
-export const INPUTRULE_BLOCK_DOLLARS:RegExp = /^\$\$\s+$/;
+export const REGEX_BLOCK_MATH_DOLLARS:RegExp = /^\$\$\s+$/;
 
 ////////////////////////////////////////////////////////////
 
-export function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
+export function makeInlineMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
 	return new InputRule(pattern, (state, match, start, end) => {
 		let $start = state.doc.resolve(start);
 		let index = $start.index();
@@ -45,7 +45,7 @@ export function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: 
 	});
 }
 
-export function blockInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
+export function makeBlockMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
 	return new InputRule(pattern, (state, match, start, end) => {
 		let $start = state.doc.resolve(start)
 		let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs
