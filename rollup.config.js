@@ -14,7 +14,6 @@ export default {
     file: 'dist/index.es.js',
     format: 'es',
     sourcemap: true,
-	
   }],
   plugins: [ts()],
   external: [
