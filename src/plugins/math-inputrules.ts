@@ -1,7 +1,30 @@
-import { InputRule, inputRules } from "prosemirror-inputrules";
-import { editorSchema } from "../math-schema";
+/*---------------------------------------------------------
+ *  Author: Benjamin R. Bray
+ *  License: MIT (see LICENSE in project root for details)
+ *--------------------------------------------------------*/
+
+import { InputRule } from "prosemirror-inputrules";
 import { NodeType } from "prosemirror-model";
 import { NodeSelection } from "prosemirror-state";
+
+////////////////////////////////////////////////////////////
+
+// ---- Inline Input Rules ------------------------------ //
+
+// simple input rule for inline math
+export const INPUTRULE_INLINE_DOLLARS:RegExp = /\$(.+)\$/;
+
+// negative lookbehind regex notation allows for escaped \$ delimiters
+// (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
+// (see https://javascript.info/regexp-lookahead-lookbehind)
+export const INPUTRULE_INLINE_DOLLARS_ESCAPED:RegExp = /(?<!\\)\$(.+)(?<!\\)\$/;
+
+// ---- Block Input Rules ------------------------------- //
+
+// simple inputrule for block math
+export const INPUTRULE_BLOCK_DOLLARS:RegExp = /^\$\$\s+$/;
+
+////////////////////////////////////////////////////////////
 
 export function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any) {
 	return new InputRule(pattern, (state, match, start, end) => {
@@ -36,14 +59,3 @@ export function blockInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (
 		));
 	})
 }
-
-export const mathInputRules = inputRules({
-	rules: [
-		// negative lookbehind regex notation for escaped \$ delimiters
-		// (see https://javascript.info/regexp-lookahead-lookbehind)
-		inlineInputRule(/(?<!\\)\$(.+)(?<!\\)\$/, editorSchema.nodes.math_inline),
-		// simpler version without the option to escape \$
-		//inlineInputRule(/\$(.+)\$/, editorSchema.nodes.math_inline),
-		blockInputRule(/^\$\$\s+$/, editorSchema.nodes.math_display)
-	]
-})

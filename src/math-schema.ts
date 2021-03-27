@@ -4,11 +4,46 @@
  *--------------------------------------------------------*/
 
 // prosemirror imports
-import { Schema, Node as ProseNode } from "prosemirror-model";
+import { MarkSpec, NodeSpec, Schema, SchemaSpec } from "prosemirror-model";
 
 ////////////////////////////////////////////////////////////
 
-export const editorSchema = new Schema({
+/**
+ * Borrowed from ProseMirror typings, modified to exclude OrderedMaps in spec,
+ * in order to help with the schema-building functions below.
+ * 
+ * NOTE:  TypeScript's typings for the spread operator { ...a, ...b } are only
+ * an approximation to the true type, and have difficulty with optional fields.
+ * So, unlike the SchemaSpec type, the `marks` field is NOT optional here.
+ *
+ * function example<T extends string>(x: { [name in T]: string; } | null) {
+ *     const s = { ...x }; // inferred to have type `{}`.
+ * }
+ * 
+ * @see https://github.com/microsoft/TypeScript/issues/10727
+ */
+interface SchemaSpecJson<N extends string = any, M extends string = any> extends SchemaSpec<N,M> {
+    nodes: { [name in N]: NodeSpec };
+    marks: { [name in M]: MarkSpec };
+    topNode?: string | null;
+}
+
+// infer generic `Nodes` and `Marks` type parameters for a SchemaSpec
+type SchemaSpecNodeT<Spec> = Spec extends SchemaSpec<infer N, infer _> ? N : never;
+type SchemaSpecMarkT<Spec> = Spec extends SchemaSpec<infer _, infer M> ? M : never;
+
+type MathSpecNodeT = SchemaSpecNodeT<typeof mathSchemaSpec>;
+type MathSpecMarkT = SchemaSpecMarkT<typeof mathSchemaSpec>;
+
+////////////////////////////////////////////////////////////
+
+// force typescript to infer generic type arguments for SchemaSpec
+function createSchemaSpec<N extends string = any, M extends string = any>(spec: SchemaSpecJson<N, M>): SchemaSpecJson<N, M> {
+	return spec;
+}
+
+// bare minimum ProseMirror schema for working with math nodes
+export const mathSchemaSpec = createSchemaSpec({
 	nodes: {
 		// :: NodeSpec top-level document node
 		doc: {
@@ -51,3 +86,31 @@ export const editorSchema = new Schema({
 		}
 	}
 });
+
+/**
+ * Use the prosemirror-math default SchemaSpec to create a new Schema.
+ */
+export function createMathSchema() {
+	return new Schema(mathSchemaSpec);
+}
+
+/**
+ * Create a new SchemaSpec by adding math nodes to an existing spec.
+
+ * @deprecated This function is included for demonstration/testing only. For the
+ *     time being, I highly recommend adding the math nodes manually to your own
+ *     ProseMirror spec to avoid unexpected interactions between the math nodes
+ *     and your own spec.  Use the example spec for reference.
+ *
+ * @param baseSpec The SchemaSpec to extend.  Must specify a `marks` field, and
+ *     must be a raw object (not an OrderedMap).
+ */
+export function extendMathSchemaSpec<N extends string, M extends string>(
+	baseSpec: SchemaSpecJson<N,M>
+): SchemaSpecJson<N|MathSpecNodeT,M|MathSpecMarkT> {
+	let nodes = { ...baseSpec.nodes, ...mathSchemaSpec.nodes }
+	let marks = { ...baseSpec.marks, ...mathSchemaSpec.marks }
+	return { nodes, marks, topNode : baseSpec.topNode };
+}
+
+extendMathSchemaSpec(mathSchemaSpec);
