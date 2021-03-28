@@ -1,25 +1,20 @@
 # `prosemirror-math`
 
+![npm version](https://img.shields.io/npm/v/@benrbray/prosemirror-math?style=flat-square) 
+![license](https://img.shields.io/github/license/benrbray/prosemirror-math?style=flat-square)
+![types](https://img.shields.io/npm/types/@benrbray/prosemirror-math?style=flat-square)
+
+> **Note:** This project is still in development, and there may be breaking changes with each release before a `>=1.0.0` version is ready.  Please don't hesitate to report issues or make feature requests!  Contributions welcome!
+
 ## Overview
 
-This project provides schema and plugins for writing mathematics using ProseMirror.  Written in TypeScript, with math rendering handled by [KaTeX](https://katex.org/).  Bundle locally with `parcel index.html`.
-
-The important files in this project are:
+The `prosemirror-math` package provides schema and plugins for comfortably writing mathematics with [ProseMirror](https://prosemirror.net/).  Written in TypeScript, with math rendering handled by [KaTeX](https://katex.org/).  You can install the [npm package](https://www.npmjs.com/package/@benrbray/prosemirror-math) or use this repository as a starting point for your own plugin.  The important files in this project are:
 
 * `src/math-schema.ts`: A minimal ProseMirror schema supporting inline and display math nodes.
 * `src/math-nodeview.ts`: A `NodeView` responsible for rendering and editing math nodes.
 * `style/math.css`: Contains all necessary styling for math nodes to display correctly.  This file can easily be modified to achieve your desired appearance.
 
-To test locally, clone the repository and run
-
-```
-> npm install
-> npm run dev
-```
-
-A local development server should become available at `http://localhost:1234`.
-
-## Examples
+## Basic Usage  ([try it yourself!](http://benrbray.com/prosemirror-math/))
 
 Unlike other editors, this plugin **treats math as part of the text itself**, rather than as an "atom" that can only be edited through a dialog box.  For example, inline math nodes can be edited directly by bringing the cursor inside of them:
 
@@ -33,60 +28,143 @@ To create a new math expression, simply enclose LaTeX math notation in dollar si
 
 ![create inline math](img/prosemirror-math_insert-inline.gif)
 
-To start a display math block, create a blank line and type `$$` followed by a space.  A multiline editor will appear.  To exit the block, press `Ctrl-Space` or navigate away the mouse or arrow keys.
+To start a display math block, create a blank line and type `$$` followed by a space.  A multiline editor will appear.  To exit the block, press `Ctrl-Enter` or navigate away the mouse or arrow keys.
 
 ![create display math](img/prosemirror-math_insert-display.gif)
 
-## Usage
+Math nodes behave like regular text when using the arrow keys or `Backspace`.  You can select, copy, and paste math nodes just like regular text!  From within a math node, press `Ctrl-Backspace` to delete the entire node.
 
-See the full example in `src/index.ts`.  At a minimum, you need to include:
+> **TIP:** You can define your own commands with `\providecommand{\cmd}{...}`!
 
-1. The `math_inline` and `math_display` schema found in `src/math-schema.ts`
-2. The `mathPlugin` ProseMirror plugin found in `src/math-plugin.ts`
+See the KaTeX documentation for a list of [supported LaTeX commands](https://katex.org/docs/supported.html). In the future, `prosemirror-math` will also accept a custom callback that can be used to invoke alternative renderers like MathJax.
 
-There are also several optional features you can enable:
+## Installation & Setup
 
-3. (work in progress) Use `mathBackspace` to backspace "into" a math node, rather than deleting the entire node.
-4. *(work in progress--may be quite slow!)* Use the `mathSelectPlugin` to make math node selections less visually jarring.
-5. Use `mathInputRules` to automatically create new math blocks when typing:
-	- Create a new inline math node by typing a dollar-sign-delimited expression like `$\int_a^b f(x) dx$` followed by a space.
-	- Create a new block math node by typing `$$` followed by a space.
+Note that `prosemirror-math` is built on top of [ProseMirror](https://prosemirror.net/), which itself has a steep learning curve.  At the very least, you will need to understand [`Schema`](https://prosemirror.net/docs/ref/#model.Document_Schema) and [`Plugins`](https://prosemirror.net/docs/ref/#state.Plugin_System) to integrate `prosemirror-math` into your project.  Start by installing the npm package:
 
-## Interacting with Math Nodes
+```
+npm install @benrbray/prosemirror-math
+```
 
-This section describes the expected behavior of math nodes created with `prosemirror-math`.  Since ProseMirror relies on `contenteditable`, which behaves differently in each browser, you might experience buggy behavior in your browser of choice.  If you notice something unusual, please file a bug report!
+Add `math_inline` and `math_display` nodes to your document schema.  The names are important!  If you modify the schema, be careful not to change any of the values marked `important!` below, or you might run into unexpected behavior!
 
-When the cursor is immediately to the left of a math node...
+```typescript
+import { Schema } from "prosemirror-model";
 
-* Pressing `RIGHT` should expand the math node and place the cursor in the LEFTMOST inner position
+let schema = new Schema({
+    nodes: {
+        doc: {
+            content: "block+"
+        },
+        paragraph: {
+            content: "inline*",
+            group: "block",
+            parseDOM: [{ tag: "p" }],
+            toDOM() { return ["p", 0]; }
+        },
+        math_inline: {               // important!
+            group: "inline math",
+            content: "text*",        // important!
+            inline: true,            // important!
+            atom: true,              // important!
+            toDOM: () => ["math-inline", { class: "math-node" }, 0],
+            parseDOM: [{
+                tag: "math-inline"   // important!
+            }]
+        },
+        math_display: {              // important!
+            group: "block math",
+            content: "text*",        // important!
+            atom: true,              // important!
+            code: true,              // important!
+            toDOM: () => ["math-display", { class: "math-node" }, 0],
+            parseDOM: [{
+                tag: "math-display"  // important!
+            }]
+        },
+        text: {
+            group: "inline"
+        }
+    }
+});
+```
 
-When the cursor is immediately to the right of a math node...
+If you want the user to be able to easily add new math nodes by typing `$...$` for inline math or `$$` followed by a space for block math, you need to create [`InputRule`](https://prosemirror.net/docs/ref/#inputrules.InputRule) instances.  You can write your own, or use the helper functions provided by `prosemirror-math`.
 
-* Pressing `LEFT` should expand the math node and place the cursor in the RIGHTMOST inner position
+> **CAUTION:**  Make sure the `NodeType`s you provide to each input rule belong to the same schema instance that you pass to your ProseMirror `EditorView` instance.  Otherwise, you'll see strange errors in the console!
 
-When the cursor is inside an INLINE math node...
+```typescript
+import {
+	makeBlockMathInputRule, makeInlineMathInputRule,
+	REGEX_INLINE_MATH_DOLLARS, REGEX_BLOCK_MATH_DOLLARS
+} from "@benrbray/prosemirror-math";
 
-* Pressing `UP` (or `LEFT` when the cursor is the LEFTMOST inner position) should close the math node and place the cursor immediately BEFORE the node
-* Pressing `DOWN` (or `RIGHT` when the cursor is in the RIGHTMOST inner position) should close the math node and place the cursor immediately AFTER the node
-* Pressing `ENTER`, `CTRL+ENTER`, or `ESC` should close the math node and place the cursor immediately AFTER the node
+// create input rules (using default regex)
+let inlineMathInputRule = makeInlineMathInputRule(REGEX_INLINE_MATH_DOLLARS, editorSchema.nodes.math_inline);
+let blockMathInputRule = makeBlockMathInputRule(REGEX_BLOCK_MATH_DOLLARS, editorSchema.nodes.math_display);
+```
 
-When the cursor is inside a BLOCK math node...
+Choose which plugins you need from the following list, and pass them to your `EditorState` instance, along with the input rules you created.
 
-* Pressing `LEFT` when the cursor is in the LEFTMOST inner position should close the math node and place the cursor immediately BEFORE the unexpanded node
-* Pressing `RIGHT` when the cursor is in the RIGHTMOST inner position should close the math node and place the cursor immediately AFTER the unexpanded node
-* Pressing `UP` when the cursor is on the TOPMOST inner line should close the math node and place the cursor immediately BEFORE the unexpanded node
-* Pressing `DOWN` when the cursor is in the BOTTOMMOST inner line should close the math node and place the cursor immediately AFTER the unexpanded math node
-* Pressing `ENTER` should create a new line
-* Pressing `CTRL+ENTER` or `ESC` should close the math node and place the cursor immediately AFTER the node
+* `mathPlugin` **(required)** Provides the core functionality of `prosemirror-math`.
+* `mathBackspaceCmd` *(recommended)* When included in your [keymap](https://prosemirror.net/docs/ref/#keymap.keymap) for the `"Backspace"` key, pressing backspace on the right boundary of a math node will place the cursor inside the math node, rather than deleting it.
+* `insertMathCmd(nodeType: NodeType)` *(optional)* Helper function for creating a command which can be used to insert a math node at the current document position.
+* `mathSelectPlugin` *(in progress)* You'll notice that by default, selecting math nodes will place ugly selection boxes around each individual character in a rendered math expression.  This plugin attempts to improve the default appearance of text selections for text that contains math nodes.
 
-## TODO
+Here is the recommended setup:
 
-In no particular order:
+```typescript
+import { mathPlugin, mathBackspaceCmd, insertMathCmd } from "@benrbray/prosemirror-math";
 
-- [ ] Encapsulate available math plugins to an `options` object passed on initialization
-- [ ] Wrap nodeViews + katexMacros as a ProseMirror plugin object
-- [ ] Test in FireFox, Safari, Edge
-- [ ] Smart backspace for block math
-- [ ] Delete empty math block on backspace
-- [ ] Support a render callback function, allowing use of MathJax / MathLive instead of KaTeX
-- [ ] Write as many tests as possible
+// prosemirror imports
+import { EditorView } from "prosemirror-view";
+import { EditorState, Plugin } from "prosemirror-state";
+import { chainCommands, deleteSelection, selectNodeBackward, joinBackward, Command } from "prosemirror-commands";
+import { keymap } from "prosemirror-keymap";
+import { inputRules } from "prosemirror-inputrules";
+
+// plugins (order matters)
+let plugins:Plugin[] = [
+    mathPlugin,
+    keymap({
+        "Mod-Space" : insertMathCmd(schema.nodes.math_inline),
+        // modify the default keymap chain for backspace
+        "Backspace": chainCommands(deleteSelection, mathBackspaceCmd, joinBackward, selectNodeBackward),
+    }),
+    inputRules({ rules: [ inlineMathInputRule, blockMathInputRule ] })
+];
+
+// create prosemirror state
+let state = EditorState.create({
+    schema: editorSchema,
+    plugins: plugins,
+    doc: /* ... */
+})
+
+// create prosemirror view
+let view = new EditorView(editorElt, { state })
+```
+
+## Development
+
+Clone this repository and install the necessary dependencies:
+
+```
+git clone git@github.com:benrbray/prosemirror-math.git
+cd prosemirror-math
+npm install
+```
+
+If you want to test using the example code, you should also install the dependencies in the `docs-src/` folder:
+
+```
+cd docs-src
+npm install
+```
+
+From the root directory, you can run the scripts in `package.json`.
+
+* Use `npm run build:dist` to build the `prosemirror-math` package with rollup.
+* Use `npm run build:docs` to build the example code with webpack and generate the static site inside the `docs/` folder.  
+* Use `npm run build` to build the package and website simultaneously.
+* Use `npm run serve:docs` to start a local development server at `localhost:8080` that will watch for changes in the `/docs-src` folder (but not in `/src`).
