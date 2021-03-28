@@ -436,7 +436,7 @@ function createMathSchema() {
     return new Schema(mathSchemaSpec);
 }
 
-const mathBackspace = (state, dispatch) => {
+const mathBackspaceCmd = (state, dispatch) => {
     // check node before
     let { $from } = state.selection;
     let nodeBefore = $from.nodeBefore;
@@ -563,5 +563,29 @@ const mathSelectPlugin = new Plugin({
     }
 });
 
-export { MathView, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, createMathSchema, makeBlockMathInputRule, makeInlineMathInputRule, mathBackspace, mathPlugin, mathSchemaSpec, mathSelectPlugin };
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * Returns a new command that can be used to inserts a new math node at the
+ * user's current document position, provided that the document schema actually
+ * allows a math node to be placed there.
+ *
+ * @param mathNodeType An instance for either your math_inline or math_display
+ *     NodeType.  Must belong to the same schema that your EditorState uses!
+ */
+function insertMathCmd(mathNodeType) {
+    return function (state, dispatch) {
+        let { $from } = state.selection, index = $from.index();
+        if (!$from.parent.canReplaceWith(index, index, mathNodeType)) {
+            return false;
+        }
+        if (dispatch) {
+            let tr = state.tr.replaceSelectionWith(mathNodeType.create({}));
+            tr = tr.setSelection(NodeSelection.create(tr.doc, $from.pos));
+            dispatch(tr);
+        }
+        return true;
+    };
+}
+
+export { MathView, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, createMathSchema, insertMathCmd, makeBlockMathInputRule, makeInlineMathInputRule, mathBackspaceCmd, mathPlugin, mathSchemaSpec, mathSelectPlugin };
 //# sourceMappingURL=index.es.js.map

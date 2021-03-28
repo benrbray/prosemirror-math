@@ -10,6 +10,7 @@ import { Plugin as ProsePlugin } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 // katex
 import { KatexOptions } from "katex";
+import { Command } from "prosemirror-commands";
 import { Command as ProseCommand } from "prosemirror-commands";
 /*---------------------------------------------------------
 *  Author: Benjamin R. Bray
@@ -121,7 +122,7 @@ declare const mathSchemaSpec: SchemaSpecJson<"doc" | "paragraph" | "math_inline"
  * Use the prosemirror-math default SchemaSpec to create a new Schema.
  */
 declare function createMathSchema(): Schema<"doc" | "paragraph" | "math_inline" | "math_display" | "text", "math_select">;
-declare const mathBackspace: ProseCommand;
+declare const mathBackspaceCmd: ProseCommand;
 ////////////////////////////////////////////////////////////
 // ---- Inline Input Rules ------------------------------ //
 // simple input rule for inline math
@@ -147,5 +148,15 @@ declare function makeBlockMathInputRule(pattern: RegExp, nodeType: NodeType, get
  * @todo (6/13/20) math selection rectangles are not quite even with text
  */
 declare const mathSelectPlugin: ProsePlugin;
-export { MathView, ICursorPosObserver, mathPlugin, mathSchemaSpec, createMathSchema, mathBackspace, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, REGEX_BLOCK_MATH_DOLLARS, makeInlineMathInputRule, makeBlockMathInputRule, mathSelectPlugin };
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * Returns a new command that can be used to inserts a new math node at the
+ * user's current document position, provided that the document schema actually
+ * allows a math node to be placed there.
+ *
+ * @param mathNodeType An instance for either your math_inline or math_display
+ *     NodeType.  Must belong to the same schema that your EditorState uses!
+ */
+declare function insertMathCmd(mathNodeType: NodeType): Command;
+export { MathView, ICursorPosObserver, mathPlugin, mathSchemaSpec, createMathSchema, mathBackspaceCmd, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, REGEX_BLOCK_MATH_DOLLARS, makeInlineMathInputRule, makeBlockMathInputRule, mathSelectPlugin, insertMathCmd };
 //# sourceMappingURL=index.es.d.ts.map
