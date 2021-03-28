@@ -9,7 +9,7 @@ export { mathPlugin } from "./math-plugin";
 export { mathSchemaSpec, createMathSchema } from "./math-schema";
 
 // recommended plugins
-export { mathBackspace } from "./plugins/math-backspace";
+export * from "./plugins/math-backspace";
 export * from "./plugins/math-inputrules";
 
 // optional / experimental plugins
