@@ -6,7 +6,7 @@
 import { 
 	createMathSchema, mathPlugin, 
 	makeBlockMathInputRule, makeInlineMathInputRule,
-	REGEX_INLINE_MATH_DOLLARS, REGEX_BLOCK_MATH_DOLLARS, mathBackspace
+	REGEX_INLINE_MATH_DOLLARS, REGEX_BLOCK_MATH_DOLLARS, mathBackspaceCmd, insertMathCmd
 } from "@benrbray/prosemirror-math";
 
 // ProseMirror imports
@@ -61,22 +61,6 @@ let blockMathInputRule = makeBlockMathInputRule(REGEX_BLOCK_MATH_DOLLARS, editor
 
 //// EDITOR SETUP //////////////////////////////////////////
 
-function insertMath(): Command {
-	let mathType = editorSchema.nodes.math_inline;
-	return function(state:EditorState, dispatch:((tr:Transaction)=>void)|undefined){
-		let { $from } = state.selection, index = $from.index();
-		if (!$from.parent.canReplaceWith(index, index, mathType)) {
-			return false
-		}
-		if (dispatch){
-			let tr = state.tr.replaceSelectionWith(mathType.create({}));
-			tr = tr.setSelection(NodeSelection.create(tr.doc, $from.pos));
-			dispatch(tr);
-		}
-		return true
-	}
-}
-
 function initEditor(){
 	// get editor element
 	let editorElt = document.getElementById("editor");
@@ -87,12 +71,12 @@ function initEditor(){
 		mathPlugin,
 		// mathSelectPlugin, // as of (03/27/20), the selection plugin is not ready for serious use
 		keymap({
-			"Mod-Space" : insertMath(),
+			"Mod-Space" : insertMathCmd(editorSchema.nodes.math_inline),
+			"Backspace": chainCommands(deleteSelection, mathBackspaceCmd, joinBackward, selectNodeBackward),
 			// below is the default keymap
-			"Enter" : chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
-			"Ctrl-Enter": chainCommands(newlineInCode, createParagraphNear, splitBlock),
-			"Backspace": chainCommands(deleteSelection, mathBackspace, joinBackward, selectNodeBackward),
-			"Delete": chainCommands(deleteSelection, joinForward, selectNodeForward)
+			//"Enter" : chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
+			//"Ctrl-Enter": chainCommands(newlineInCode, createParagraphNear, splitBlock),
+			//"Delete": chainCommands(deleteSelection, joinForward, selectNodeForward)
 		}),
 		inputRules({ rules: [ inlineMathInputRule, blockMathInputRule ] })
 	];

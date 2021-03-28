@@ -14,3 +14,6 @@ export * from "./plugins/math-inputrules";
 
 // optional / experimental plugins
 export { mathSelectPlugin } from "./plugins/math-select";
+
+// commands
+export { insertMathCmd } from "./commands/insert-math-cmd";
