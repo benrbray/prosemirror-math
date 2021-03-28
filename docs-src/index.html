@@ -2,12 +2,41 @@
 
 <html>
 	<head>
-		<title>ProseMirror</title>
-	<script defer src="index.js"></script><link href="main.css" rel="stylesheet"></head>
+		<title>ProseMirror Math</title>
+		<meta charset="utf-8">
+	</head>
 <body>
 	<article>
-	<h2>Inline Math MWE</h2>
-	<div id="editor" spellcheck="false"></div>
+		<!-- Content -------------------------------------->
+		<div class="header"><div class="center">
+			<div class="header-title">
+				<h1><code>prosemirror-math</code></h1>
+				<div class="links">
+					(install via <a href="https://www.npmjs.com/package/@benrbray/prosemirror-math">npm</a> or read more on <a href="https://github.com/benrbray/prosemirror-math">github</a>)
+				</div>
+			</div>
+
+			<section>
+				<p>This package provides <a href="https://prosemirror.net/">ProseMirror</a> schema and plugins for comfortably writing mathematics in a WYSIWYG style. Written in TypeScript, with math rendering handled by <a href="https://katex.org/">KaTeX</a>.</p>
+
+				Basic Usage:
+				<ul>
+					<li>Inline math nodes are delimited with <kbd>$</kbd>.  After typing the closing dollar sign in an expression like <code>$\int_a^b f(x) dx$</code>, a math node will appear.
+					<li>To start a block math node, press <kbd>Enter</kbd> to create a blank line, then type <kbd>$$</kbd> followed by <kbd>Space</kbd>.  You can type multi-line math expressions, and the result will render in display style.</li>
+					<li>Math nodes behave like regular text when using arrow keys or <kbd>Backspace</kbd>.  From within a math node, press <kbd>Ctrl-Backspace</kbd> to delete the entire node.
+					<li>You can select, copy, and paste math nodes just like regular text!
+					<li>See the KaTeX documentation for a list of <a href="https://katex.org/docs/supported.html">supported commands</a>.  In the future, you will also be able to use alternative renderers like <a href="https://www.mathjax.org/">MathJax</a>.
+					<li>You can define your own commands with <code>\providecommand{\cmd}{...}</code>!
+				</ul>
+
+				<p>The text below this line is all editable, including the math!  Go ahead, try it!</p>
+			</section>
+		</div></div>
+
+		<!-- Content -------------------------------------->
+		<div class="content"><div class="center">
+			<div id="editor" spellcheck="false"></div>
+		</div>
 	</article>
 
 	<div id="editor-content" style="display:none">

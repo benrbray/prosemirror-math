@@ -125,29 +125,27 @@ declare const mathBackspace: ProseCommand;
 ////////////////////////////////////////////////////////////
 // ---- Inline Input Rules ------------------------------ //
 // simple input rule for inline math
-declare const INPUTRULE_INLINE_DOLLARS: RegExp;
+declare const REGEX_INLINE_MATH_DOLLARS: RegExp;
 // negative lookbehind regex notation allows for escaped \$ delimiters
 // (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
 // (see https://javascript.info/regexp-lookahead-lookbehind)
-declare const INPUTRULE_INLINE_DOLLARS_ESCAPED: RegExp;
+declare const REGEX_INLINE_MATH_DOLLARS_ESCAPED: RegExp;
 // ---- Block Input Rules ------------------------------- //
 // simple inputrule for block math
-declare const INPUTRULE_BLOCK_DOLLARS: RegExp;
+declare const REGEX_BLOCK_MATH_DOLLARS: RegExp;
 ////////////////////////////////////////////////////////////
-declare function inlineInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
-declare function blockInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
-declare namespace mathSelectPlugin {
-    /**
-     * Due to the internals of KaTeX, by default, selecting rendered
-     * math will put a box around each individual character of a
-     * math expression.  This plugin attempts to make math selections
-     * slightly prettier by instead setting a background color on the node.
-     *
-     * (remember to use the included math.css!)
-     *
-     * @todo (6/13/20) math selection rectangles are not quite even with text
-     */
-    const mathSelectPlugin: ProsePlugin;
-}
-export { MathView, ICursorPosObserver, mathPlugin, mathSchemaSpec, createMathSchema, mathBackspace, INPUTRULE_INLINE_DOLLARS, INPUTRULE_INLINE_DOLLARS_ESCAPED, INPUTRULE_BLOCK_DOLLARS, inlineInputRule, blockInputRule, mathSelectPlugin };
+declare function makeInlineMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
+declare function makeBlockMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
+/**
+ * Due to the internals of KaTeX, by default, selecting rendered
+ * math will put a box around each individual character of a
+ * math expression.  This plugin attempts to make math selections
+ * slightly prettier by instead setting a background color on the node.
+ *
+ * (remember to use the included math.css!)
+ *
+ * @todo (6/13/20) math selection rectangles are not quite even with text
+ */
+declare const mathSelectPlugin: ProsePlugin;
+export { MathView, ICursorPosObserver, mathPlugin, mathSchemaSpec, createMathSchema, mathBackspace, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, REGEX_BLOCK_MATH_DOLLARS, makeInlineMathInputRule, makeBlockMathInputRule, mathSelectPlugin };
 //# sourceMappingURL=index.es.d.ts.map

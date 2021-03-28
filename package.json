@@ -11,9 +11,11 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -cw",
-    "clean": "npx del dist",
+    "build:dist": "rollup -c",
+    "build:docs": "cd docs-src && npm run build",
+    "build": "npm run build:dist; npm run build:docs",
+    "clean": "npx del dist; npx del docs",
+    "serve:docs": "cd docs-src && npm run serve",
     "prepare": "npm run clean; npm run build"
   },
   "keywords": [
