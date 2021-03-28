@@ -271,7 +271,13 @@ class MathView {
                             this._outerView.focus();
                             return true;
                         }),
-                        "Enter": newlineInCode,
+                        "Ctrl-Backspace": (state, dispatch, tr_inner) => {
+                            // delete math node and focus the outer view
+                            this._outerView.dispatch(this._outerView.state.tr.insertText(""));
+                            this._outerView.focus();
+                            return true;
+                        },
+                        "Enter": chainCommands(newlineInCode, collapseMathCmd(this._outerView, +1, false)),
                         "Ctrl-Enter": collapseMathCmd(this._outerView, +1, false),
                         "ArrowLeft": collapseMathCmd(this._outerView, -1, true),
                         "ArrowRight": collapseMathCmd(this._outerView, +1, true),
