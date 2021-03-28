@@ -8,6 +8,7 @@ module.exports = {
 	entry: './index.ts',
 	output: {
 		filename: 'index.js',
+		// notice that the output path is in a sibling folder!
 		path: path.resolve(__dirname, '../docs'),
 	},
 	devtool: 'inline-source-map',
@@ -38,9 +39,16 @@ module.exports = {
 	resolve: {
 		extensions: ['.tsx', '.ts', '.js'],
 		modules: [path.resolve(__dirname, 'node_modules')],
+
+		// if you want to use the npm package instead of a local development
+		// copy, delete the lines below and install prosemirror-math as a
+		// dependency in the `docs-src/` folder.
+		// 
+		// -- begin delete --
 		alias: {
 			"@benrbray/prosemirror-math" : "../"
 		}
+		// -- end delete ----
 	},
 	plugins : [new MiniCssExtractPlugin(), new HtmlWebpackPlugin({ template : "./index.html"})],
 	watchOptions: {

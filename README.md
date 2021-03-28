@@ -14,6 +14,10 @@ The `prosemirror-math` package provides schema and plugins for comfortably writi
 * `src/math-nodeview.ts`: A `NodeView` responsible for rendering and editing math nodes.
 * `style/math.css`: Contains all necessary styling for math nodes to display correctly.  This file can easily be modified to achieve your desired appearance.
 
+Additionally, the `docs-src/` contains Aafully-functioning example project that uses webpack generate a static website that includes `prosemirror-math` and all its dependencies.  
+
+* If you want to the example code as a starting point for your own project, pay special attention to the comments in `docs-src/webpack.config.js`.
+
 ## Basic Usage  ([try it yourself!](http://benrbray.com/prosemirror-math/))
 
 Unlike other editors, this plugin **treats math as part of the text itself**, rather than as an "atom" that can only be edited through a dialog box.  For example, inline math nodes can be edited directly by bringing the cursor inside of them:
