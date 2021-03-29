@@ -12,17 +12,21 @@ import { NodeSelection } from "prosemirror-state";
 // ---- Inline Input Rules ------------------------------ //
 
 // simple input rule for inline math
-export const REGEX_INLINE_MATH_DOLLARS:RegExp = /\$(.+)\$/;
+export const REGEX_INLINE_MATH_DOLLARS:RegExp = new RegExp("\$(.+)\$");
 
 // negative lookbehind regex notation allows for escaped \$ delimiters
 // (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
 // (see https://javascript.info/regexp-lookahead-lookbehind)
-export const REGEX_INLINE_MATH_DOLLARS_ESCAPED:RegExp = /(?<!\\)\$(.+)(?<!\\)\$/;
+export const REGEX_INLINE_MATH_DOLLARS_ESCAPED:RegExp = (() => {
+    // attempt to create regex with negative lookbehind
+    try      { return new RegExp("(?<!\\)\$(.+)(?<!\\)\$"); }
+    catch(e) { return REGEX_INLINE_MATH_DOLLARS;            }
+})();
 
 // ---- Block Input Rules ------------------------------- //
 
 // simple inputrule for block math
-export const REGEX_BLOCK_MATH_DOLLARS:RegExp = /^\$\$\s+$/;
+export const REGEX_BLOCK_MATH_DOLLARS:RegExp = new RegExp("/\$\$\s+$");
 
 ////////////////////////////////////////////////////////////
 
