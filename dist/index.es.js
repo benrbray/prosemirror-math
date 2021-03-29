@@ -587,5 +587,5 @@ function insertMathCmd(mathNodeType) {
     };
 }
 
-export { MathView, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, createMathSchema, insertMathCmd, makeBlockMathInputRule, makeInlineMathInputRule, mathBackspaceCmd, mathPlugin, mathSchemaSpec, mathSelectPlugin };
+export { MathView, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, createMathSchema, createMathView, insertMathCmd, makeBlockMathInputRule, makeInlineMathInputRule, mathBackspaceCmd, mathPlugin, mathSchemaSpec, mathSelectPlugin };
 //# sourceMappingURL=index.es.js.map

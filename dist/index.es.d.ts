@@ -91,6 +91,12 @@ interface IMathPluginState {
     };
     activeNodeViews: MathView[];
 }
+/**
+ * Returns a function suitable for passing as a field in `EditorProps.nodeViews`.
+ * @param displayMode TRUE for block math, FALSE for inline math.
+ * @see https://prosemirror.net/docs/ref/#view.EditorProps.nodeViews
+ */
+declare function createMathView(displayMode: boolean): (node: ProseNode, view: EditorView, getPos: boolean | (() => number)) => MathView;
 declare const mathPlugin: ProsePlugin<IMathPluginState, any>;
 ////////////////////////////////////////////////////////////
 /**
@@ -158,5 +164,5 @@ declare const mathSelectPlugin: ProsePlugin;
  *     NodeType.  Must belong to the same schema that your EditorState uses!
  */
 declare function insertMathCmd(mathNodeType: NodeType): Command;
-export { MathView, ICursorPosObserver, mathPlugin, mathSchemaSpec, createMathSchema, mathBackspaceCmd, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, REGEX_BLOCK_MATH_DOLLARS, makeInlineMathInputRule, makeBlockMathInputRule, mathSelectPlugin, insertMathCmd };
+export { MathView, ICursorPosObserver, mathPlugin, createMathView, IMathPluginState, mathSchemaSpec, createMathSchema, mathBackspaceCmd, makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, mathSelectPlugin, insertMathCmd };
 //# sourceMappingURL=index.es.d.ts.map

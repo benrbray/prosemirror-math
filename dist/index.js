@@ -600,6 +600,7 @@ exports.REGEX_BLOCK_MATH_DOLLARS = REGEX_BLOCK_MATH_DOLLARS;
 exports.REGEX_INLINE_MATH_DOLLARS = REGEX_INLINE_MATH_DOLLARS;
 exports.REGEX_INLINE_MATH_DOLLARS_ESCAPED = REGEX_INLINE_MATH_DOLLARS_ESCAPED;
 exports.createMathSchema = createMathSchema;
+exports.createMathView = createMathView;
 exports.insertMathCmd = insertMathCmd;
 exports.makeBlockMathInputRule = makeBlockMathInputRule;
 exports.makeInlineMathInputRule = makeInlineMathInputRule;
