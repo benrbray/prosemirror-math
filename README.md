@@ -1,6 +1,6 @@
 # `prosemirror-math`
 
-![npm version](https://img.shields.io/npm/v/@benrbray/prosemirror-math?style=flat-square) 
+[![](https://img.shields.io/npm/v/@benrbray/prosemirror-math?style=flat-square)](https://www.npmjs.com/package/@benrbray/prosemirror-math)
 ![license](https://img.shields.io/github/license/benrbray/prosemirror-math?style=flat-square)
 ![types](https://img.shields.io/npm/types/@benrbray/prosemirror-math?style=flat-square)
 
