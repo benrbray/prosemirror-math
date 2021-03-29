@@ -50,6 +50,24 @@ Note that `prosemirror-math` is built on top of [ProseMirror](https://prosemirro
 npm install @benrbray/prosemirror-math
 ```
 
+### CSS
+
+First, make sure you include the CSS files for `prosemirror-math` and `katex` on any pages that will need them.  They can be found at the following paths:
+
+```
+node_modules/katex/dist/katex.min.css
+node_modules/@benrbray/prosemirror-math/style/math.css
+```
+
+If you are using webpack with the `HtmlWebpackPlugin` and `MiniCssExtractPlugin`, you might need to include the CSS files like this:
+
+```
+import "@benrbray/prosemirror-math/style/math.css";
+import "katex/dist/katex.min.css";
+```
+
+### Schema
+
 Add `math_inline` and `math_display` nodes to your document schema.  The names are important!  If you modify the schema, be careful not to change any of the values marked `important!` below, or you might run into unexpected behavior!
 
 ```typescript
@@ -93,6 +111,8 @@ let schema = new Schema({
 });
 ```
 
+### Input Rules
+
 If you want the user to be able to easily add new math nodes by typing `$...$` for inline math or `$$` followed by a space for block math, you need to create [`InputRule`](https://prosemirror.net/docs/ref/#inputrules.InputRule) instances.  You can write your own, or use the helper functions provided by `prosemirror-math`.
 
 > **CAUTION:**  Make sure the `NodeType`s you provide to each input rule belong to the same schema instance that you pass to your ProseMirror `EditorView` instance.  Otherwise, you'll see strange errors in the console!
@@ -107,6 +127,8 @@ import {
 let inlineMathInputRule = makeInlineMathInputRule(REGEX_INLINE_MATH_DOLLARS, editorSchema.nodes.math_inline);
 let blockMathInputRule = makeBlockMathInputRule(REGEX_BLOCK_MATH_DOLLARS, editorSchema.nodes.math_display);
 ```
+
+### Plugins
 
 Choose which plugins you need from the following list, and pass them to your `EditorState` instance, along with the input rules you created.
 

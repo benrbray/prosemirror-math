@@ -74,9 +74,9 @@ function initEditor(){
 			"Mod-Space" : insertMathCmd(editorSchema.nodes.math_inline),
 			"Backspace": chainCommands(deleteSelection, mathBackspaceCmd, joinBackward, selectNodeBackward),
 			// below is the default keymap
-			//"Enter" : chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
-			//"Ctrl-Enter": chainCommands(newlineInCode, createParagraphNear, splitBlock),
-			//"Delete": chainCommands(deleteSelection, joinForward, selectNodeForward)
+			"Enter" : chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
+			"Ctrl-Enter": chainCommands(newlineInCode, createParagraphNear, splitBlock),
+			"Delete": chainCommands(deleteSelection, joinForward, selectNodeForward)
 		}),
 		inputRules({ rules: [ inlineMathInputRule, blockMathInputRule ] })
 	];
