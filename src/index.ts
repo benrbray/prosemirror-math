@@ -5,12 +5,12 @@
 
 // core functionality
 export { MathView, ICursorPosObserver } from "./math-nodeview";
-export { mathPlugin } from "./math-plugin";
+export { mathPlugin, createMathView, IMathPluginState } from "./math-plugin";
 export { mathSchemaSpec, createMathSchema } from "./math-schema";
 
 // recommended plugins
-export * from "./plugins/math-backspace";
-export * from "./plugins/math-inputrules";
+export { mathBackspaceCmd } from "./plugins/math-backspace";
+export { makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED } from "./plugins/math-inputrules";
 
 // optional / experimental plugins
 export { mathSelectPlugin } from "./plugins/math-select";

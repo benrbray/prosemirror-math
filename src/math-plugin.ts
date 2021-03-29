@@ -11,7 +11,7 @@ import { EditorView } from "prosemirror-view";
 
 ////////////////////////////////////////////////////////////
 
-interface IMathPluginState {
+export interface IMathPluginState {
 	macros: { [cmd:string] : string };
 	activeNodeViews: MathView[];
 }
@@ -21,7 +21,7 @@ interface IMathPluginState {
  * @param displayMode TRUE for block math, FALSE for inline math.
  * @see https://prosemirror.net/docs/ref/#view.EditorProps.nodeViews
  */
-function createMathView(displayMode:boolean){
+export function createMathView(displayMode:boolean){
 	return (node: ProseNode, view: EditorView, getPos:boolean|(()=>number)):MathView => {
 		/** @todo is this necessary?
 		* Docs says that for any function proprs, the current plugin instance
