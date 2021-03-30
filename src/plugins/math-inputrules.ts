@@ -19,8 +19,8 @@ export const REGEX_INLINE_MATH_DOLLARS:RegExp = /\$(.+)\$/; //new RegExp("\$(.+)
 // (see https://javascript.info/regexp-lookahead-lookbehind)
 export const REGEX_INLINE_MATH_DOLLARS_ESCAPED:RegExp = (() => {
     // attempt to create regex with negative lookbehind
-    try      { return new RegExp("(?<!\\)\$(.+)(?<!\\)\$", "i"); }
-    catch(e) { return REGEX_INLINE_MATH_DOLLARS;            }
+    try      { return new RegExp("(?<!\\\\)\\$(.+)(?<!\\\\)\\$"); }
+    catch(e) { return REGEX_INLINE_MATH_DOLLARS;                  }
 })();
 
 // ---- Block Input Rules ------------------------------- //
