@@ -135,12 +135,13 @@ Choose which plugins you need from the following list, and pass them to your `Ed
 * `mathPlugin` **(required)** Provides the core functionality of `prosemirror-math`.
 * `mathBackspaceCmd` *(recommended)* When included in your [keymap](https://prosemirror.net/docs/ref/#keymap.keymap) for the `"Backspace"` key, pressing backspace on the right boundary of a math node will place the cursor inside the math node, rather than deleting it.
 * `insertMathCmd(nodeType: NodeType)` *(optional)* Helper function for creating a command which can be used to insert a math node at the current document position.
+* `mathSerializer` *(recommended)* Attach to the `clipboardTextSerializer` prop of your EditorView.  When pasting a selection from a `prosemirror-math` editor to a plain text editor, ensures that the pasted math expressions will be properly delimited by `$...$` and `$$...$$`.
 * `mathSelectPlugin` *(in progress)* You'll notice that by default, selecting math nodes will place ugly selection boxes around each individual character in a rendered math expression.  This plugin attempts to improve the default appearance of text selections for text that contains math nodes.
 
 Here is the recommended setup:
 
 ```typescript
-import { mathPlugin, mathBackspaceCmd, insertMathCmd } from "@benrbray/prosemirror-math";
+import { mathPlugin, mathBackspaceCmd, insertMathCmd, mathSerializer } from "@benrbray/prosemirror-math";
 
 // prosemirror imports
 import { EditorView } from "prosemirror-view";
@@ -168,7 +169,10 @@ let state = EditorState.create({
 })
 
 // create prosemirror view
-let view = new EditorView(editorElt, { state })
+let view = new EditorView(editorElt, {
+    state,
+    clipboardTextSerializer: (slice) => { return mathSerializer.serializeSlice(slice) },
+})
 ```
 
 ## Development
