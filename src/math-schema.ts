@@ -5,6 +5,7 @@
 
 // prosemirror imports
 import { MarkSpec, NodeSpec, Schema, SchemaSpec } from "prosemirror-model";
+import { SchemaSpecMarkT, SchemaSpecNodeT } from "./utils/types";
 
 ////////////////////////////////////////////////////////////
 
@@ -27,10 +28,6 @@ interface SchemaSpecJson<N extends string = any, M extends string = any> extends
     marks: { [name in M]: MarkSpec };
     topNode?: string | null;
 }
-
-// infer generic `Nodes` and `Marks` type parameters for a SchemaSpec
-type SchemaSpecNodeT<Spec> = Spec extends SchemaSpec<infer N, infer _> ? N : never;
-type SchemaSpecMarkT<Spec> = Spec extends SchemaSpec<infer _, infer M> ? M : never;
 
 type MathSpecNodeT = SchemaSpecNodeT<typeof mathSchemaSpec>;
 type MathSpecMarkT = SchemaSpecMarkT<typeof mathSchemaSpec>;

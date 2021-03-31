@@ -17,3 +17,7 @@ export { mathSelectPlugin } from "./plugins/math-select";
 
 // commands
 export { insertMathCmd } from "./commands/insert-math-cmd";
+
+// utilities
+export { mathSerializer } from "./utils/text-serializer";
+export * from "./utils/types";

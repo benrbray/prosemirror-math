@@ -476,14 +476,22 @@ const mathBackspaceCmd = (state, dispatch) => {
 ////////////////////////////////////////////////////////////
 // ---- Inline Input Rules ------------------------------ //
 // simple input rule for inline math
-const REGEX_INLINE_MATH_DOLLARS = /\$(.+)\$/;
+const REGEX_INLINE_MATH_DOLLARS = /\$(.+)\$/; //new RegExp("\$(.+)\$", "i");
 // negative lookbehind regex notation allows for escaped \$ delimiters
 // (requires browser supporting ECMA2018 standard -- currently only Chrome / FF)
 // (see https://javascript.info/regexp-lookahead-lookbehind)
-const REGEX_INLINE_MATH_DOLLARS_ESCAPED = /(?<!\\)\$(.+)(?<!\\)\$/;
+const REGEX_INLINE_MATH_DOLLARS_ESCAPED = (() => {
+    // attempt to create regex with negative lookbehind
+    try {
+        return new RegExp("(?<!\\\\)\\$(.+)(?<!\\\\)\\$");
+    }
+    catch (e) {
+        return REGEX_INLINE_MATH_DOLLARS;
+    }
+})();
 // ---- Block Input Rules ------------------------------- //
 // simple inputrule for block math
-const REGEX_BLOCK_MATH_DOLLARS = /^\$\$\s+$/;
+const REGEX_BLOCK_MATH_DOLLARS = /\$\$\s+$/; //new RegExp("\$\$\s+$", "i");
 ////////////////////////////////////////////////////////////
 function makeInlineMathInputRule(pattern, nodeType, getAttrs) {
     return new prosemirrorInputrules.InputRule(pattern, (state, match, start, end) => {
@@ -595,6 +603,65 @@ function insertMathCmd(mathNodeType) {
     };
 }
 
+class ProseMirrorTextSerializer {
+    constructor(fns, base) {
+        // use base serializer as a fallback
+        this.nodes = Object.assign(Object.assign({}, base === null || base === void 0 ? void 0 : base.nodes), fns.nodes);
+        this.marks = Object.assign(Object.assign({}, base === null || base === void 0 ? void 0 : base.marks), fns.marks);
+    }
+    serializeFragment(fragment) {
+        // adapted from the undocumented `Fragment.textBetween` function
+        // https://github.com/ProseMirror/prosemirror-model/blob/eef20c8c6dbf841b1d70859df5d59c21b5108a4f/src/fragment.js#L46
+        let blockSeparator = "\n\n";
+        let leafText = undefined;
+        let text = "";
+        let separated = true;
+        let from = 0;
+        let to = fragment.size;
+        fragment.nodesBetween(from, to, (node, pos) => {
+            var _a;
+            // check if one of our custom serializers handles this node
+            let serialized = this.serializeNode(node);
+            if (serialized !== null) {
+                text += serialized;
+                return false;
+            }
+            if (node.isText) {
+                text += ((_a = node.text) === null || _a === void 0 ? void 0 : _a.slice(Math.max(from, pos) - pos, to - pos)) || "";
+                separated = !blockSeparator;
+            }
+            else if (node.isLeaf && leafText) {
+                text += leafText;
+                separated = !blockSeparator;
+            }
+            else if (!separated && node.isBlock) {
+                text += blockSeparator;
+                separated = true;
+            }
+        }, 0);
+        return text;
+    }
+    serializeSlice(slice) {
+        return this.serializeFragment(slice.content);
+    }
+    serializeNode(node) {
+        // check if one of our custom serializers handles this node
+        let nodeSerializer = this.nodes[node.type.name];
+        if (nodeSerializer !== undefined) {
+            return nodeSerializer(node);
+        }
+        else {
+            return null;
+        }
+    }
+}
+const mathSerializer = new ProseMirrorTextSerializer({
+    nodes: {
+        "math_inline": (node) => `$${node.textContent}$`,
+        "math_display": (node) => `\n\n$$\n${node.textContent}\n$$`
+    }
+});
+
 exports.MathView = MathView;
 exports.REGEX_BLOCK_MATH_DOLLARS = REGEX_BLOCK_MATH_DOLLARS;
 exports.REGEX_INLINE_MATH_DOLLARS = REGEX_INLINE_MATH_DOLLARS;
@@ -608,4 +675,5 @@ exports.mathBackspaceCmd = mathBackspaceCmd;
 exports.mathPlugin = mathPlugin;
 exports.mathSchemaSpec = mathSchemaSpec;
 exports.mathSelectPlugin = mathSelectPlugin;
+exports.mathSerializer = mathSerializer;
 //# sourceMappingURL=index.js.map

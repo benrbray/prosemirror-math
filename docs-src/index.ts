@@ -4,13 +4,13 @@
  *--------------------------------------------------------*/
 
 import { 
-	createMathSchema, mathPlugin, 
+	createMathSchema, mathPlugin, mathSerializer,
 	makeBlockMathInputRule, makeInlineMathInputRule,
 	REGEX_INLINE_MATH_DOLLARS, REGEX_BLOCK_MATH_DOLLARS, mathBackspaceCmd, insertMathCmd
 } from "@benrbray/prosemirror-math";
 
 // ProseMirror imports
-import { DOMParser } from "prosemirror-model";
+import { DOMParser, Slice } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
 import { EditorState, Transaction, Plugin as ProsePlugin, NodeSelection } from "prosemirror-state";
 import { chainCommands, newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock, deleteSelection, joinForward, selectNodeForward, selectNodeBackward, joinBackward, Command } from "prosemirror-commands";
@@ -85,9 +85,14 @@ function initEditor(){
 	let state = EditorState.create({
 		schema: editorSchema,
 		doc: DOMParser.fromSchema(editorSchema).parse(document.getElementById("editor-content") as HTMLElement),
-		plugins: plugins,
+		plugins: plugins
 	})
 
 	// create ProseMirror view
-	let view = new EditorView(editorElt, { state })
+	let view = new EditorView(editorElt, { 
+		state,
+		clipboardTextSerializer: (slice) => { return mathSerializer.serializeSlice(slice) },
+	});
+
+	(window as any).view = view;
 }
