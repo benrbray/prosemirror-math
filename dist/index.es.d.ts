@@ -5,7 +5,7 @@
 // prosemirror imports
 import { MarkSpec, NodeSpec, Schema, SchemaSpec, NodeType, Mark, Slice, MarkType, Fragment } from "prosemirror-model";
 import { Node as ProseNode } from "prosemirror-model";
-import { EditorState, Transaction } from "prosemirror-state";
+import { EditorState, Transaction, PluginKey } from "prosemirror-state";
 import { Plugin as ProsePlugin } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 // katex
@@ -17,6 +17,27 @@ import { Command as ProseCommand } from "prosemirror-commands";
 *  License: MIT (see LICENSE in project root for details)
 *--------------------------------------------------------*/
 import { InputRule } from "prosemirror-inputrules";
+////////////////////////////////////////////////////////////
+interface IMathPluginState {
+    macros: {
+        [cmd: string]: string;
+    };
+    /** A list of currently active `NodeView`s, in insertion order. */
+    activeNodeViews: MathView[];
+    /**
+     * Used to determine whether to place the cursor in the front- or back-most
+     * position when expanding a math node, without overriding the default arrow
+     * key behavior.
+     */
+    prevCursorPos: number;
+}
+/**
+ * Returns a function suitable for passing as a field in `EditorProps.nodeViews`.
+ * @param displayMode TRUE for block math, FALSE for inline math.
+ * @see https://prosemirror.net/docs/ref/#view.EditorProps.nodeViews
+ */
+declare function createMathView(displayMode: boolean): (node: ProseNode, view: EditorView, getPos: boolean | (() => number)) => MathView;
+declare const mathPlugin: ProsePlugin<IMathPluginState, any>;
 //// INLINE MATH NODEVIEW //////////////////////////////////
 interface ICursorPosObserver {
     /** indicates on which side cursor should appear when this node is selected */
@@ -46,6 +67,7 @@ declare class MathView implements NodeView, ICursorPosObserver {
     private _tagName;
     private _isEditing;
     private _onDestroy;
+    private _mathPluginKey;
     // == Lifecycle ===================================== //
     /**
      * @param onDestroy Callback for when this NodeView is destroyed.
@@ -56,7 +78,7 @@ declare class MathView implements NodeView, ICursorPosObserver {
      * @option tagName HTML tag name to use for this NodeView.  If none is provided,
      *     will use the node name with underscores converted to hyphens.
      */
-    constructor(node: ProseNode, view: EditorView, getPos: (() => number), options?: IMathViewOptions, onDestroy?: (() => void));
+    constructor(node: ProseNode, view: EditorView, getPos: (() => number), options: IMathViewOptions | undefined, mathPluginKey: PluginKey<IMathPluginState>, onDestroy?: (() => void));
     destroy(): void;
     /**
      * Ensure focus on the inner editor whenever this node has focus.
@@ -84,20 +106,6 @@ declare class MathView implements NodeView, ICursorPosObserver {
      */
     closeEditor(render?: boolean): void;
 }
-////////////////////////////////////////////////////////////
-interface IMathPluginState {
-    macros: {
-        [cmd: string]: string;
-    };
-    activeNodeViews: MathView[];
-}
-/**
- * Returns a function suitable for passing as a field in `EditorProps.nodeViews`.
- * @param displayMode TRUE for block math, FALSE for inline math.
- * @see https://prosemirror.net/docs/ref/#view.EditorProps.nodeViews
- */
-declare function createMathView(displayMode: boolean): (node: ProseNode, view: EditorView, getPos: boolean | (() => number)) => MathView;
-declare const mathPlugin: ProsePlugin<IMathPluginState, any>;
 ////////////////////////////////////////////////////////////////////////////////
 // infer generic `Nodes` and `Marks` type parameters for a SchemaSpec
 type SchemaSpecNodeT<Spec> = Spec extends SchemaSpec<infer N, infer _> ? N : never;
