@@ -13,8 +13,18 @@ import { EditorView } from "prosemirror-view";
 
 export interface IMathPluginState {
 	macros: { [cmd:string] : string };
+	/** A list of currently active `NodeView`s, in insertion order. */
 	activeNodeViews: MathView[];
+	/** 
+	 * Used to determine whether to place the cursor in the front- or back-most
+	 * position when expanding a math node, without overriding the default arrow
+	 * key behavior.
+	 */
+	prevCursorPos: number;
 }
+
+// uniquely identifies the prosemirror-math plugin
+const MATH_PLUGIN_KEY = new PluginKey<IMathPluginState>("prosemirror-math");
 
 /** 
  * Returns a function suitable for passing as a field in `EditorProps.nodeViews`.
@@ -27,7 +37,7 @@ export function createMathView(displayMode:boolean){
 		* Docs says that for any function proprs, the current plugin instance
 		* will be bound to `this`.  However, the typings don't reflect this.
 		*/
-		let pluginState = mathPluginKey.getState(view.state);
+		let pluginState = MATH_PLUGIN_KEY.getState(view.state);
 		if(!pluginState){ throw new Error("no math plugin!"); }
 		let nodeViews = pluginState.activeNodeViews;
 
@@ -35,6 +45,7 @@ export function createMathView(displayMode:boolean){
 		let nodeView = new MathView(
 			node, view, getPos as (() => number), 
 			{ katexOptions : { displayMode, macros: pluginState.macros } },
+			MATH_PLUGIN_KEY,
 			()=>{ nodeViews.splice(nodeViews.indexOf(nodeView)); },
 		);
 
@@ -43,30 +54,26 @@ export function createMathView(displayMode:boolean){
 	}
 }
 
-let mathPluginKey = new PluginKey<IMathPluginState>("prosemirror-math");
 
 let mathPluginSpec:PluginSpec<IMathPluginState> = {
-	key: mathPluginKey,
+	key: MATH_PLUGIN_KEY,
 	state: {
 		init(config, instance){
 			return {
 				macros: {},
-				activeNodeViews: []
+				activeNodeViews: [],
+				prevCursorPos: 0,
 			};
 		},
 		apply(tr, value, oldState, newState){
-			/** @todo (8/21/20)
-			 * since new state has not been fully applied yet, we don't yet have
-			 * information about any new MathViews that were created by this transaction.
-			 * As a result, the cursor position may be wrong for any newly created math blocks.
-			 */
-			let pluginState = mathPluginKey.getState(oldState);
-			if(pluginState) {
-				for (let mathView of pluginState.activeNodeViews){
-					mathView.updateCursorPos(newState);
-				}
+			// produce updated state field for this plugin
+			return {
+				// these values are left unchanged
+				activeNodeViews : value.activeNodeViews,
+				macros          : value.macros,
+				// update with the second-most recent cursor pos
+				prevCursorPos   : oldState.selection.from
 			}
-			return value;
 		},
 		/** @todo (8/21/20) implement serialization for math plugin */
 		// toJSON(value) { },

@@ -5,7 +5,7 @@
 
 // prosemirror imports
 import { Node as ProseNode } from "prosemirror-model";
-import { EditorState, Transaction, TextSelection, NodeSelection } from "prosemirror-state";
+import { EditorState, Transaction, TextSelection, NodeSelection, PluginKey } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 import { StepMap } from "prosemirror-transform";
 import { keymap } from "prosemirror-keymap";
@@ -15,6 +15,7 @@ import { newlineInCode, chainCommands, deleteSelection, liftEmptyBlock, Command 
 import katex, { ParseError, KatexOptions } from "katex";
 import { nudgeCursorBackCmd, nudgeCursorForwardCmd } from "./commands/move-cursor-cmd";
 import { collapseMathCmd } from "./commands/collapse-math-cmd";
+import { IMathPluginState } from "./math-plugin";
 
 //// INLINE MATH NODEVIEW //////////////////////////////////
 
@@ -51,6 +52,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 	private _tagName: string;
 	private _isEditing: boolean;
 	private _onDestroy: (() => void) | undefined;
+	private _mathPluginKey: PluginKey<IMathPluginState>;
 
 	// == Lifecycle ===================================== //
 
@@ -63,12 +65,20 @@ export class MathView implements NodeView, ICursorPosObserver {
 	 * @option tagName HTML tag name to use for this NodeView.  If none is provided,
 	 *     will use the node name with underscores converted to hyphens.
 	 */
-	constructor(node: ProseNode, view: EditorView, getPos: (() => number), options: IMathViewOptions = {}, onDestroy?: (() => void)) {
+	constructor(
+		node: ProseNode,
+		view: EditorView, 
+		getPos: (() => number), 
+		options: IMathViewOptions = {}, 
+		mathPluginKey: PluginKey<IMathPluginState>,
+		onDestroy?: (() => void)
+	) {
 		// store arguments
 		this._node = node;
 		this._outerView = view;
 		this._getPos = getPos;
 		this._onDestroy = onDestroy && onDestroy.bind(this);
+		this._mathPluginKey = mathPluginKey;
 
 		// editing state
 		this.cursorSide = "start";
@@ -291,11 +301,18 @@ export class MathView implements NodeView, ICursorPosObserver {
 		let innerState = this._innerView.state;
 		this._innerView.focus();
 
-		// determine cursor position
-		let pos: number = (this.cursorSide == "start") ? 0 : this._node.nodeSize - 2;
+		// request outer cursor position before math node was selected
+		let maybePos = this._mathPluginKey.getState(this._outerView.state)?.prevCursorPos;
+		if(maybePos === null || maybePos === undefined) {
+			console.error("[prosemirror-math] Error:  Unable to fetch math plugin state from key.");
+		}
+		let prevCursorPos: number = maybePos ?? 0;
+		
+		// compute position that cursor should appear within the expanded math node
+		let innerPos = (prevCursorPos <= this._getPos()) ? 0 : this._node.nodeSize - 2;
 		this._innerView.dispatch(
 			innerState.tr.setSelection(
-				TextSelection.create(innerState.doc, pos)
+				TextSelection.create(innerState.doc, innerPos)
 			)
 		);
 
