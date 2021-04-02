@@ -1,6 +1,6 @@
 {
   "name": "@benrbray/prosemirror-math",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Schema and plugins for first-class math support in ProseMirror.",
   "repository": "github:benrbray/prosemirror-math",
   "private": false,
