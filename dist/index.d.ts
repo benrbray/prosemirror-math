@@ -137,11 +137,11 @@ interface SchemaSpecJson<N extends string = any, M extends string = any> extends
     topNode?: string | null;
 }
 // bare minimum ProseMirror schema for working with math nodes
-declare const mathSchemaSpec: SchemaSpecJson<"doc" | "paragraph" | "math_inline" | "math_display" | "text", "math_select">;
+declare const mathSchemaSpec: SchemaSpecJson<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">;
 /**
  * Use the prosemirror-math default SchemaSpec to create a new Schema.
  */
-declare function createMathSchema(): Schema<"doc" | "paragraph" | "math_inline" | "math_display" | "text", "math_select">;
+declare function createMathSchema(): Schema<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">;
 declare const mathBackspaceCmd: ProseCommand;
 ////////////////////////////////////////////////////////////
 // ---- Inline Input Rules ------------------------------ //
@@ -210,6 +210,6 @@ declare class ProseMirrorTextSerializer<S extends Schema<any, any>> {
     serializeSlice(slice: Slice<S>): string;
     serializeNode(node: ProseNode<S>): string | null;
 }
-declare const mathSerializer: ProseMirrorTextSerializer<Schema<"doc" | "paragraph" | "math_inline" | "math_display" | "text", "math_select">>;
+declare const mathSerializer: ProseMirrorTextSerializer<Schema<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">>;
 export { MathView, ICursorPosObserver, mathPlugin, createMathView, IMathPluginState, mathSchemaSpec, createMathSchema, mathBackspaceCmd, makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, mathSelectPlugin, insertMathCmd, mathSerializer, SchemaSpecNodeT, SchemaSpecMarkT, SchemaNodeT, SchemaMarkT };
 //# sourceMappingURL=index.d.ts.map

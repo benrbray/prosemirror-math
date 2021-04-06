@@ -4,7 +4,8 @@
  *--------------------------------------------------------*/
 
 // prosemirror imports
-import { MarkSpec, NodeSpec, Schema, SchemaSpec } from "prosemirror-model";
+import { Node as ProseNode, Fragment, MarkSpec, NodeSpec, Schema, SchemaSpec, NodeType } from "prosemirror-model";
+import { defaultBlockMathParseRules, defaultInlineMathParseRules } from "./plugins/math-paste-rules";
 import { SchemaSpecMarkT, SchemaSpecNodeT } from "./utils/types";
 
 ////////////////////////////////////////////////////////////
@@ -58,9 +59,10 @@ export const mathSchemaSpec = createSchemaSpec({
 			inline: true,
 			atom: true,
 			toDOM: () => ["math-inline", { class: "math-node" }, 0],
-			parseDOM: [{
-				tag: "math-inline"
-			}]
+			parseDOM: [
+				{ tag: "math-inline" },
+				...defaultInlineMathParseRules
+			]
 		},
 		math_display: {
 			group: "block math",
@@ -68,9 +70,10 @@ export const mathSchemaSpec = createSchemaSpec({
 			atom: true,
 			code: true,
 			toDOM: () => ["math-display", { class: "math-node" }, 0],
-			parseDOM: [{
-				tag: "math-display"
-			}]
+			parseDOM: [
+				{ tag: "math-display" },
+				...defaultBlockMathParseRules
+			]
 		},
 		text: {
 			group: "inline"

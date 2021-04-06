@@ -91,7 +91,7 @@ function initEditor(){
 	// create ProseMirror view
 	let view = new EditorView(editorElt, { 
 		state,
-		clipboardTextSerializer: (slice) => { return mathSerializer.serializeSlice(slice) },
+		clipboardTextSerializer: (slice) => { return mathSerializer.serializeSlice(slice) }
 	});
 
 	(window as any).view = view;
