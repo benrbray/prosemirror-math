@@ -131,7 +131,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 	 * This helps to prevent accidental deletions of math blocks.
 	 */
 	ensureFocus() {
-		if (this._innerView && this._outerView.hasFocus()) {
+		if (this._innerView && this._outerView.hasFocus() && this._outerView.editable) {
 			this._innerView.focus();
 		}
 	}
