@@ -131,7 +131,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 	 * This helps to prevent accidental deletions of math blocks.
 	 */
 	ensureFocus() {
-		if (this._innerView && this._outerView.hasFocus() && this._outerView.editable) {
+		if (this._innerView && this._outerView.hasFocus()) {
 			this._innerView.focus();
 		}
 	}
@@ -182,6 +182,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 	// == Events ===================================== //
 
 	selectNode() {
+		if (!this._outerView.editable) { return; }
 		this.dom.classList.add("ProseMirror-selectednode");
 		if (!this._isEditing) { this.openEditor(); }
 	}
