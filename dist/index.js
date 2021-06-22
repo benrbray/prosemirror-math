@@ -171,6 +171,9 @@ class MathView {
     }
     // == Events ===================================== //
     selectNode() {
+        if (!this._outerView.editable) {
+            return;
+        }
         this.dom.classList.add("ProseMirror-selectednode");
         if (!this._isEditing) {
             this.openEditor();
