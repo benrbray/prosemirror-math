@@ -1,7 +1,7 @@
 // rollup.config.js
 // (adapted from https://hackernoon.com/building-and-publishing-a-module-with-typescript-and-rollup-js-faa778c85396)
 
-import ts from "@wessberg/rollup-plugin-ts";
+import ts from "rollup-plugin-ts";
 import pkg from "./package.json"
 
 export default {
