@@ -73,7 +73,6 @@ class MathView {
      *     will use the node name with underscores converted to hyphens.
      */
     constructor(node, view, getPos, options = {}, mathPluginKey, onDestroy) {
-        console.log("MathView :: constructor :: received node", node);
         // store arguments
         this._node = node;
         this._outerView = view;
