@@ -63,7 +63,6 @@ function texFromMathML_02(root: Element): false|string {
  * <script type="math/tex"></script>
  */
 function texFromScriptTag(root: Element): false|string {
-	console.log("texFromScriptTag ::", root);
 	let match = root.querySelector("script[type*='math/tex']");
 	return (match?.textContent ?? false);
 }
