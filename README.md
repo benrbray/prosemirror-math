@@ -132,7 +132,8 @@ let blockMathInputRule = makeBlockMathInputRule(REGEX_BLOCK_MATH_DOLLARS, editor
 
 Choose which plugins you need from the following list, and pass them to your `EditorState` instance, along with the input rules you created.
 
-* `mathPlugin` **(required)** Provides the core functionality of `prosemirror-math`.
+* `mathPlugin` **(required)** Provides the core functionality of `prosemirror-math`.  You must set the following options:
+    - `enableBlockPreview`:  When `true`, a preview pane is shown when editing block math.
 * `mathBackspaceCmd` *(recommended)* When included in your [keymap](https://prosemirror.net/docs/ref/#keymap.keymap) for the `"Backspace"` key, pressing backspace on the right boundary of a math node will place the cursor inside the math node, rather than deleting it.
 * `insertMathCmd(nodeType: NodeType)` *(optional)* Helper function for creating a command which can be used to insert a math node at the current document position.
 * `mathSerializer` *(recommended)* Attach to the `clipboardTextSerializer` prop of your EditorView.  When pasting a selection from a `prosemirror-math` editor to a plain text editor, ensures that the pasted math expressions will be properly delimited by `$...$` and `$$...$$`.
@@ -152,7 +153,7 @@ import { inputRules } from "prosemirror-inputrules";
 
 // plugins (order matters)
 let plugins:Plugin[] = [
-    mathPlugin,
+    mathPlugin({ enableBlockPreview: false }),
     keymap({
         "Mod-Space" : insertMathCmd(schema.nodes.math_inline),
         // modify the default keymap chain for backspace
