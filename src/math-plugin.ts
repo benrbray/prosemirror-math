@@ -48,8 +48,7 @@ export function createMathView(displayMode:boolean){
 			node, view, getPos as (() => number), 
 			{ katexOptions : { displayMode, macros: pluginState.macros } },
 			displayMode,
-			MATH_PLUGIN_KEY,
-			()=>{ nodeViews.splice(nodeViews.indexOf(nodeView)); },
+			MATH_PLUGIN_KEY
 		);
 
 		nodeViews.push(nodeView);

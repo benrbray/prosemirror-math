@@ -19,13 +19,6 @@ import { IMathPluginState } from "./math-plugin";
 
 //// INLINE MATH NODEVIEW //////////////////////////////////
 
-export interface ICursorPosObserver {
-	/** indicates on which side cursor should appear when this node is selected */
-	cursorSide: "start" | "end";
-	/**  */
-	updateCursorPos(state: EditorState): void;
-}
-
 interface IMathViewOptions {
 	/** Dom element name to use for this NodeView */
 	tagName?: string;
@@ -33,7 +26,7 @@ interface IMathViewOptions {
 	katexOptions?:KatexOptions;
 }
 
-export class MathView implements NodeView, ICursorPosObserver {
+export class MathView implements NodeView {
 
 	// nodeview params
 	private _node: ProseNode;
@@ -54,7 +47,6 @@ export class MathView implements NodeView, ICursorPosObserver {
 	private _tagName: string;
 	private _editorActive: boolean;
 	private _renderActive: boolean;
-	private _onDestroy: (() => void) | undefined;
 	private _mathPluginKey: PluginKey<IMathPluginState>;
 
 	// == Lifecycle ===================================== //
@@ -76,15 +68,13 @@ export class MathView implements NodeView, ICursorPosObserver {
 		getPos: (() => number), 
 		options: IMathViewOptions = {}, 
 		isBlockMath: boolean,
-		mathPluginKey: PluginKey<IMathPluginState>,
-		onDestroy?: (() => void)
+		mathPluginKey: PluginKey<IMathPluginState>
 	) {
 		// store arguments
 		this._node = node;
 		this._outerView = view;
 		this._getPos = getPos;
 		this._isBlockMath = isBlockMath;
-		this._onDestroy = onDestroy && onDestroy.bind(this);
 		this._mathPluginKey = mathPluginKey;
 
 		// editing state
@@ -176,18 +166,6 @@ export class MathView implements NodeView, ICursorPosObserver {
 		}
 
 		return true;
-	}
-
-	updateCursorPos(state: EditorState): void {
-		const pos = this._getPos();
-		const size = this._node.nodeSize;
-		const inPmSelection =
-			(state.selection.from < pos + size)
-			&& (pos < state.selection.to);
-
-		if (!inPmSelection) {
-			this.cursorSide = (pos < state.selection.from) ? "end" : "start";
-		}
 	}
 
 	// == Events ===================================== //

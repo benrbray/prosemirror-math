@@ -4,7 +4,7 @@
  *--------------------------------------------------------*/
 
 // core functionality
-export { MathView, ICursorPosObserver } from "./math-nodeview";
+export { MathView } from "./math-nodeview";
 export { mathPlugin, createMathView, IMathPluginState } from "./math-plugin";
 export { mathSchemaSpec, createMathSchema } from "./math-schema";
 
