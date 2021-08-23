@@ -21,6 +21,8 @@ export interface IMathPluginState {
 	 * key behavior.
 	 */
 	prevCursorPos: number;
+	/** When TRUE, a preview pane is shown when editing block math. */
+	enableBlockPreview: boolean;
 }
 
 // uniquely identifies the prosemirror-math plugin
@@ -45,6 +47,7 @@ export function createMathView(displayMode:boolean){
 		let nodeView = new MathView(
 			node, view, getPos as (() => number), 
 			{ katexOptions : { displayMode, macros: pluginState.macros } },
+			displayMode,
 			MATH_PLUGIN_KEY,
 			()=>{ nodeViews.splice(nodeViews.indexOf(nodeView)); },
 		);
@@ -54,37 +57,46 @@ export function createMathView(displayMode:boolean){
 	}
 }
 
+export interface IMathPluginOptions {
+	enableBlockPreview: boolean;
+}
 
-let mathPluginSpec:PluginSpec<IMathPluginState> = {
-	key: MATH_PLUGIN_KEY,
-	state: {
-		init(config, instance){
-			return {
-				macros: {},
-				activeNodeViews: [],
-				prevCursorPos: 0,
-			};
+export function mathPluginSpec(options: IMathPluginOptions): PluginSpec<IMathPluginState> {
+	return {
+		key: MATH_PLUGIN_KEY,
+		state: {
+			init(config, instance){
+				return {
+					macros: {},
+					activeNodeViews: [],
+					prevCursorPos: 0,
+					enableBlockPreview: options.enableBlockPreview
+				};
+			},
+			apply(tr, value, oldState, newState){
+				// produce updated state field for this plugin
+				return {
+					// these values are left unchanged
+					activeNodeViews    : value.activeNodeViews,
+					macros             : value.macros,
+					enableBlockPreview : value.enableBlockPreview,
+					// update with the second-most recent cursor pos
+					prevCursorPos      : oldState.selection.from
+				}
+			},
+			/** @todo (8/21/20) implement serialization for math plugin */
+			// toJSON(value) { },
+			// fromJSON(config, value, state){ return {}; }
 		},
-		apply(tr, value, oldState, newState){
-			// produce updated state field for this plugin
-			return {
-				// these values are left unchanged
-				activeNodeViews : value.activeNodeViews,
-				macros          : value.macros,
-				// update with the second-most recent cursor pos
-				prevCursorPos   : oldState.selection.from
+		props: {
+			nodeViews: {
+				"math_inline" : createMathView(false),
+				"math_display" : createMathView(true)
 			}
-		},
-		/** @todo (8/21/20) implement serialization for math plugin */
-		// toJSON(value) { },
-		// fromJSON(config, value, state){ return {}; }
-	},
-	props: {
-		nodeViews: {
-			"math_inline" : createMathView(false),
-			"math_display" : createMathView(true)
 		}
-	}
-};
+	};
+}
 
-export const mathPlugin = new ProsePlugin(mathPluginSpec);
+export function mathPlugin(options: IMathPluginOptions): ProsePlugin {
+	return new ProsePlugin(mathPluginSpec(options));
+}
