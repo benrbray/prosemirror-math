@@ -5,7 +5,7 @@
 // prosemirror imports
 import { MarkSpec, NodeSpec, Schema, SchemaSpec, NodeType, Mark, Slice, MarkType, Fragment } from "prosemirror-model";
 import { Node as ProseNode } from "prosemirror-model";
-import { EditorState, Transaction, PluginKey } from "prosemirror-state";
+import { Transaction, PluginKey } from "prosemirror-state";
 import { Plugin as ProsePlugin } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 // katex
@@ -30,6 +30,8 @@ interface IMathPluginState {
      * key behavior.
      */
     prevCursorPos: number;
+    /** When TRUE, a preview pane is shown when editing block math. */
+    enableBlockPreview: boolean;
 }
 /**
  * Returns a function suitable for passing as a field in `EditorProps.nodeViews`.
@@ -37,21 +39,18 @@ interface IMathPluginState {
  * @see https://prosemirror.net/docs/ref/#view.EditorProps.nodeViews
  */
 declare function createMathView(displayMode: boolean): (node: ProseNode, view: EditorView, getPos: boolean | (() => number)) => MathView;
-declare const mathPlugin: ProsePlugin<IMathPluginState, any>;
-//// INLINE MATH NODEVIEW //////////////////////////////////
-interface ICursorPosObserver {
-    /** indicates on which side cursor should appear when this node is selected */
-    cursorSide: "start" | "end";
-    /**  */
-    updateCursorPos(state: EditorState): void;
+interface IMathPluginOptions {
+    enableBlockPreview: boolean;
 }
+declare function mathPlugin(options: IMathPluginOptions): ProsePlugin;
+//// INLINE MATH NODEVIEW //////////////////////////////////
 interface IMathViewOptions {
     /** Dom element name to use for this NodeView */
     tagName?: string;
     /** Whether to render this node as display or inline math. */
     katexOptions?: KatexOptions;
 }
-declare class MathView implements NodeView, ICursorPosObserver {
+declare class MathView implements NodeView {
     // nodeview params
     private _node;
     private _outerView;
@@ -60,16 +59,20 @@ declare class MathView implements NodeView, ICursorPosObserver {
     dom: HTMLElement;
     private _mathRenderElt;
     private _mathSrcElt;
+    private _mathEditorElt;
     private _innerView;
     // internal state
     cursorSide: "start" | "end";
+    private _isBlockMath;
     private _katexOptions;
     private _tagName;
-    private _isEditing;
-    private _onDestroy;
+    private _editorActive;
+    private _renderActive;
     private _mathPluginKey;
     // == Lifecycle ===================================== //
     /**
+     * @param isBlockMath Set to TRUE for block math, FALSE for inline math.
+     *     Currently, only affects the math preview pane.
      * @param onDestroy Callback for when this NodeView is destroyed.
      *     This NodeView should unregister itself from the list of ICursorPosObservers.
      *
@@ -78,7 +81,10 @@ declare class MathView implements NodeView, ICursorPosObserver {
      * @option tagName HTML tag name to use for this NodeView.  If none is provided,
      *     will use the node name with underscores converted to hyphens.
      */
-    constructor(node: ProseNode, view: EditorView, getPos: (() => number), options: IMathViewOptions | undefined, mathPluginKey: PluginKey<IMathPluginState>, onDestroy?: (() => void));
+    constructor(node: ProseNode, view: EditorView, getPos: (() => number), options: IMathViewOptions | undefined, isBlockMath: boolean, mathPluginKey: PluginKey<IMathPluginState>);
+    /**
+     * Destroy the NodeView, leaving it in an invalid state.
+     */
     destroy(): void;
     /**
      * Ensure focus on the inner editor whenever this node has focus.
@@ -87,7 +93,6 @@ declare class MathView implements NodeView, ICursorPosObserver {
     ensureFocus(): void;
     // == Updates ======================================= //
     update(node: ProseNode, decorations: Decoration[]): boolean;
-    updateCursorPos(state: EditorState): void;
     // == Events ===================================== //
     selectNode(): void;
     deselectNode(): void;
@@ -97,6 +102,15 @@ declare class MathView implements NodeView, ICursorPosObserver {
     renderMath(): void;
     // == Inner Editor ================================== //
     dispatchInner(tr: Transaction): void;
+    /**
+     * Mark the render pane as active.  CSS controls actual visibility.
+     * @param isPreview If TRUE, we are currently in preview mode.
+     */
+    showRender(isPreview: boolean): void;
+    /**
+     * Mark the render pane as inactive.  CSS controls actual visibility.
+     */
+    hideRender(): void;
     openEditor(): void;
     /**
      * Called when the inner ProseMirror editor should close.
@@ -211,5 +225,5 @@ declare class ProseMirrorTextSerializer<S extends Schema<any, any>> {
     serializeNode(node: ProseNode<S>): string | null;
 }
 declare const mathSerializer: ProseMirrorTextSerializer<Schema<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">>;
-export { MathView, ICursorPosObserver, mathPlugin, createMathView, IMathPluginState, mathSchemaSpec, createMathSchema, mathBackspaceCmd, makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, mathSelectPlugin, insertMathCmd, mathSerializer, SchemaSpecNodeT, SchemaSpecMarkT, SchemaNodeT, SchemaMarkT };
+export { MathView, mathPlugin, createMathView, IMathPluginState, mathSchemaSpec, createMathSchema, mathBackspaceCmd, makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, mathSelectPlugin, insertMathCmd, mathSerializer, SchemaSpecNodeT, SchemaSpecMarkT, SchemaNodeT, SchemaMarkT };
 //# sourceMappingURL=index.es.d.ts.map

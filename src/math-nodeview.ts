@@ -19,13 +19,6 @@ import { IMathPluginState } from "./math-plugin";
 
 //// INLINE MATH NODEVIEW //////////////////////////////////
 
-export interface ICursorPosObserver {
-	/** indicates on which side cursor should appear when this node is selected */
-	cursorSide: "start" | "end";
-	/**  */
-	updateCursorPos(state: EditorState): void;
-}
-
 interface IMathViewOptions {
 	/** Dom element name to use for this NodeView */
 	tagName?: string;
@@ -33,7 +26,7 @@ interface IMathViewOptions {
 	katexOptions?:KatexOptions;
 }
 
-export class MathView implements NodeView, ICursorPosObserver {
+export class MathView implements NodeView {
 
 	// nodeview params
 	private _node: ProseNode;
@@ -44,19 +37,23 @@ export class MathView implements NodeView, ICursorPosObserver {
 	dom: HTMLElement;
 	private _mathRenderElt: HTMLElement | undefined;
 	private _mathSrcElt: HTMLElement | undefined;
+	private _mathEditorElt: HTMLElement | undefined;
 	private _innerView: EditorView | undefined;
 
 	// internal state
 	cursorSide: "start" | "end";
+	private _isBlockMath: boolean;
 	private _katexOptions: KatexOptions;
 	private _tagName: string;
-	private _isEditing: boolean;
-	private _onDestroy: (() => void) | undefined;
+	private _editorActive: boolean;
+	private _renderActive: boolean;
 	private _mathPluginKey: PluginKey<IMathPluginState>;
 
 	// == Lifecycle ===================================== //
 
 	/**
+	 * @param isBlockMath Set to TRUE for block math, FALSE for inline math.
+	 *     Currently, only affects the math preview pane.
 	 * @param onDestroy Callback for when this NodeView is destroyed.  
 	 *     This NodeView should unregister itself from the list of ICursorPosObservers.
 	 * 
@@ -70,19 +67,20 @@ export class MathView implements NodeView, ICursorPosObserver {
 		view: EditorView, 
 		getPos: (() => number), 
 		options: IMathViewOptions = {}, 
-		mathPluginKey: PluginKey<IMathPluginState>,
-		onDestroy?: (() => void)
+		isBlockMath: boolean,
+		mathPluginKey: PluginKey<IMathPluginState>
 	) {
 		// store arguments
 		this._node = node;
 		this._outerView = view;
 		this._getPos = getPos;
-		this._onDestroy = onDestroy && onDestroy.bind(this);
+		this._isBlockMath = isBlockMath;
 		this._mathPluginKey = mathPluginKey;
 
 		// editing state
 		this.cursorSide = "start";
-		this._isEditing = false;
+		this._editorActive = false;
+		this._renderActive = true;
 
 		// options
 		this._katexOptions = Object.assign({ globalGroup: true, throwOnError: false }, options.katexOptions);
@@ -97,6 +95,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 		this._mathRenderElt.classList.add("math-render");
 		this.dom.appendChild(this._mathRenderElt);
 
+		// wrapper for the math source code
 		this._mathSrcElt = document.createElement("span");
 		this._mathSrcElt.classList.add("math-src");
 		this.dom.appendChild(this._mathSrcElt);
@@ -108,6 +107,9 @@ export class MathView implements NodeView, ICursorPosObserver {
 		this.renderMath();
 	}
 
+	/**
+	 * Destroy the NodeView, leaving it in an invalid state.
+	 */
 	destroy() {
 		// close the inner editor without rendering
 		this.closeEditor(false);
@@ -159,23 +161,11 @@ export class MathView implements NodeView, ICursorPosObserver {
 			}
 		}
 
-		if (!this._isEditing) {
+		if (this._renderActive) {
 			this.renderMath();
 		}
 
 		return true;
-	}
-
-	updateCursorPos(state: EditorState): void {
-		const pos = this._getPos();
-		const size = this._node.nodeSize;
-		const inPmSelection =
-			(state.selection.from < pos + size)
-			&& (pos < state.selection.to);
-
-		if (!inPmSelection) {
-			this.cursorSide = (pos < state.selection.from) ? "end" : "start";
-		}
 	}
 
 	// == Events ===================================== //
@@ -183,12 +173,12 @@ export class MathView implements NodeView, ICursorPosObserver {
 	selectNode() {
 		if (!this._outerView.editable) { return; }
 		this.dom.classList.add("ProseMirror-selectednode");
-		if (!this._isEditing) { this.openEditor(); }
+		if (!this._editorActive) { this.openEditor(); }
 	}
 
 	deselectNode() {
 		this.dom.classList.remove("ProseMirror-selectednode");
-		if (this._isEditing) { this.closeEditor(); }
+		if (this._editorActive) { this.closeEditor(); }
 	}
 
 	stopEvent(event: Event): boolean {
@@ -259,6 +249,24 @@ export class MathView implements NodeView, ICursorPosObserver {
 		}
 	}
 
+	/** 
+	 * Mark the render pane as active.  CSS controls actual visibility.
+	 * @param isPreview If TRUE, we are currently in preview mode.
+	 */
+	showRender(isPreview: boolean) {
+		if(isPreview) { this._mathRenderElt?.classList.add("math-preview");    } 
+		else          { this._mathRenderElt?.classList.remove("math-preview"); }
+		this._renderActive = true;
+	}
+
+	/** 
+	 * Mark the render pane as inactive.  CSS controls actual visibility.
+	 */
+	hideRender() {
+		this._mathRenderElt?.classList.remove("math-preview");
+		this._renderActive = false;
+	}
+
 	openEditor() {
 		if (this._innerView) { throw Error("inner view should not exist!"); }
 
@@ -302,11 +310,14 @@ export class MathView implements NodeView, ICursorPosObserver {
 		let innerState = this._innerView.state;
 		this._innerView.focus();
 
-		// request outer cursor position before math node was selected
-		let maybePos = this._mathPluginKey.getState(this._outerView.state)?.prevCursorPos;
-		if(maybePos === null || maybePos === undefined) {
+		// request plugin state
+		const maybeState = this._mathPluginKey.getState(this._outerView.state);
+		if(maybeState === null || maybeState === undefined) {
 			console.error("[prosemirror-math] Error:  Unable to fetch math plugin state from key.");
 		}
+
+		// get most recent cursor position from outer editor
+		const maybePos = maybeState?.prevCursorPos;
 		let prevCursorPos: number = maybePos ?? 0;
 		
 		// compute position that cursor should appear within the expanded math node
@@ -317,7 +328,12 @@ export class MathView implements NodeView, ICursorPosObserver {
 			)
 		);
 
-		this._isEditing = true;
+		this._editorActive = true;
+		
+		// optionally activate preview window
+		let showPreview = this._isBlockMath && maybeState?.enableBlockPreview;
+		if(showPreview) { this.showRender(true); }
+		else            { this.hideRender();     }
 	}
 
 	/**
@@ -333,6 +349,8 @@ export class MathView implements NodeView, ICursorPosObserver {
 		}
 
 		if (render) { this.renderMath(); }
-		this._isEditing = false;
+		
+		this._editorActive = false;
+		this.showRender(false);
 	}
 }

@@ -68,7 +68,7 @@ function initEditor(){
 
 	// plugins
 	let plugins:ProsePlugin[] = [
-		mathPlugin,
+		mathPlugin({ enableBlockPreview: true }),
 		// mathSelectPlugin, // as of (03/27/20), the selection plugin is not ready for serious use
 		keymap({
 			"Mod-Space" : insertMathCmd(editorSchema.nodes.math_inline),

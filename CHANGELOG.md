@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+* Display math now shows a preview pane.  Inline math previews may be supported in the future. 
+* Added an `initialText` parameter to `insertMathCmd`
+
+**Breaking Changes**
+
+* Added new `isBlockMath` argument to `MathView` constructor
+* `mathPlugin` and `mathPluginSpec` are now functions that accept an `options` parameter
+* The `mathPlugin` state now has an extra flag indicating whether previews are enabled
+
 ## [Releases]
 
 ### [0.2.2] - 2021-06-24

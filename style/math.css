@@ -32,8 +32,8 @@
 	tab-size: 4;
 }
 
-.math-node.ProseMirror-selectednode .math-src { display: inline; }
-.math-node.ProseMirror-selectednode .math-render { display: none; }
+.math-node.ProseMirror-selectednode .math-src { display: inherit; }
+.math-node.ProseMirror-selectednode .math-render:not(.math-preview) { display: none; }
 
 /* -- Inline Math --------------------------------------- */
 
@@ -63,7 +63,7 @@ math-display { display: block; }
 
 math-display .math-render { display: block; }
 
-math-display.ProseMirror-selectednode { background-color: #eee; }
+math-display.ProseMirror-selectednode .math-src { background-color: #eee; }
 
 math-display .math-src .ProseMirror {
 	width: 100%;
@@ -77,6 +77,12 @@ math-display .math-src::after, math-display .math-src::before {
 }
 
 math-display .katex-display { margin: 0; }
+
+/* -- Block Preview ------------------------------------- */
+
+math-display .math-render.math-preview {
+	margin-bottom: 1em;
+}
 
 /* -- Selection Plugin ---------------------------------- */
 

@@ -72,6 +72,8 @@ function collapseMathCmd(outerView, dir, requireOnBorder, requireEmptySelection 
 class MathView {
     // == Lifecycle ===================================== //
     /**
+     * @param isBlockMath Set to TRUE for block math, FALSE for inline math.
+     *     Currently, only affects the math preview pane.
      * @param onDestroy Callback for when this NodeView is destroyed.
      *     This NodeView should unregister itself from the list of ICursorPosObservers.
      *
@@ -80,16 +82,17 @@ class MathView {
      * @option tagName HTML tag name to use for this NodeView.  If none is provided,
      *     will use the node name with underscores converted to hyphens.
      */
-    constructor(node, view, getPos, options = {}, mathPluginKey, onDestroy) {
+    constructor(node, view, getPos, options = {}, isBlockMath, mathPluginKey) {
         // store arguments
         this._node = node;
         this._outerView = view;
         this._getPos = getPos;
-        this._onDestroy = onDestroy && onDestroy.bind(this);
+        this._isBlockMath = isBlockMath;
         this._mathPluginKey = mathPluginKey;
         // editing state
         this.cursorSide = "start";
-        this._isEditing = false;
+        this._editorActive = false;
+        this._renderActive = true;
         // options
         this._katexOptions = Object.assign({ globalGroup: true, throwOnError: false }, options.katexOptions);
         this._tagName = options.tagName || this._node.type.name.replace("_", "-");
@@ -100,6 +103,7 @@ class MathView {
         this._mathRenderElt.textContent = "";
         this._mathRenderElt.classList.add("math-render");
         this.dom.appendChild(this._mathRenderElt);
+        // wrapper for the math source code
         this._mathSrcElt = document.createElement("span");
         this._mathSrcElt.classList.add("math-src");
         this.dom.appendChild(this._mathSrcElt);
@@ -108,6 +112,9 @@ class MathView {
         // render initial content
         this.renderMath();
     }
+    /**
+     * Destroy the NodeView, leaving it in an invalid state.
+     */
     destroy() {
         // close the inner editor without rendering
         this.closeEditor(false);
@@ -154,19 +161,10 @@ class MathView {
                 }
             }
         }
-        if (!this._isEditing) {
+        if (this._renderActive) {
             this.renderMath();
         }
         return true;
-    }
-    updateCursorPos(state) {
-        const pos = this._getPos();
-        const size = this._node.nodeSize;
-        const inPmSelection = (state.selection.from < pos + size)
-            && (pos < state.selection.to);
-        if (!inPmSelection) {
-            this.cursorSide = (pos < state.selection.from) ? "end" : "start";
-        }
     }
     // == Events ===================================== //
     selectNode() {
@@ -174,13 +172,13 @@ class MathView {
             return;
         }
         this.dom.classList.add("ProseMirror-selectednode");
-        if (!this._isEditing) {
+        if (!this._editorActive) {
             this.openEditor();
         }
     }
     deselectNode() {
         this.dom.classList.remove("ProseMirror-selectednode");
-        if (this._isEditing) {
+        if (this._editorActive) {
             this.closeEditor();
         }
     }
@@ -254,8 +252,29 @@ class MathView {
                 this._outerView.dispatch(outerTr);
         }
     }
-    openEditor() {
+    /**
+     * Mark the render pane as active.  CSS controls actual visibility.
+     * @param isPreview If TRUE, we are currently in preview mode.
+     */
+    showRender(isPreview) {
+        var _a, _b;
+        if (isPreview) {
+            (_a = this._mathRenderElt) === null || _a === void 0 ? void 0 : _a.classList.add("math-preview");
+        }
+        else {
+            (_b = this._mathRenderElt) === null || _b === void 0 ? void 0 : _b.classList.remove("math-preview");
+        }
+        this._renderActive = true;
+    }
+    /**
+     * Mark the render pane as inactive.  CSS controls actual visibility.
+     */
+    hideRender() {
         var _a;
+        (_a = this._mathRenderElt) === null || _a === void 0 ? void 0 : _a.classList.remove("math-preview");
+        this._renderActive = false;
+    }
+    openEditor() {
         if (this._innerView) {
             throw Error("inner view should not exist!");
         }
@@ -303,16 +322,26 @@ class MathView {
         // focus element
         let innerState = this._innerView.state;
         this._innerView.focus();
-        // request outer cursor position before math node was selected
-        let maybePos = (_a = this._mathPluginKey.getState(this._outerView.state)) === null || _a === void 0 ? void 0 : _a.prevCursorPos;
-        if (maybePos === null || maybePos === undefined) {
+        // request plugin state
+        const maybeState = this._mathPluginKey.getState(this._outerView.state);
+        if (maybeState === null || maybeState === undefined) {
             console.error("[prosemirror-math] Error:  Unable to fetch math plugin state from key.");
         }
+        // get most recent cursor position from outer editor
+        const maybePos = maybeState === null || maybeState === void 0 ? void 0 : maybeState.prevCursorPos;
         let prevCursorPos = maybePos !== null && maybePos !== void 0 ? maybePos : 0;
         // compute position that cursor should appear within the expanded math node
         let innerPos = (prevCursorPos <= this._getPos()) ? 0 : this._node.nodeSize - 2;
         this._innerView.dispatch(innerState.tr.setSelection(prosemirrorState.TextSelection.create(innerState.doc, innerPos)));
-        this._isEditing = true;
+        this._editorActive = true;
+        // optionally activate preview window
+        let showPreview = this._isBlockMath && (maybeState === null || maybeState === void 0 ? void 0 : maybeState.enableBlockPreview);
+        if (showPreview) {
+            this.showRender(true);
+        }
+        else {
+            this.hideRender();
+        }
     }
     /**
      * Called when the inner ProseMirror editor should close.
@@ -328,7 +357,8 @@ class MathView {
         if (render) {
             this.renderMath();
         }
-        this._isEditing = false;
+        this._editorActive = false;
+        this.showRender(false);
     }
 }
 
@@ -355,43 +385,49 @@ function createMathView(displayMode) {
         }
         let nodeViews = pluginState.activeNodeViews;
         // set up NodeView
-        let nodeView = new MathView(node, view, getPos, { katexOptions: { displayMode, macros: pluginState.macros } }, MATH_PLUGIN_KEY, () => { nodeViews.splice(nodeViews.indexOf(nodeView)); });
+        let nodeView = new MathView(node, view, getPos, { katexOptions: { displayMode, macros: pluginState.macros } }, displayMode, MATH_PLUGIN_KEY);
         nodeViews.push(nodeView);
         return nodeView;
     };
 }
-let mathPluginSpec = {
-    key: MATH_PLUGIN_KEY,
-    state: {
-        init(config, instance) {
-            return {
-                macros: {},
-                activeNodeViews: [],
-                prevCursorPos: 0,
-            };
+function mathPluginSpec(options) {
+    return {
+        key: MATH_PLUGIN_KEY,
+        state: {
+            init(config, instance) {
+                return {
+                    macros: {},
+                    activeNodeViews: [],
+                    prevCursorPos: 0,
+                    enableBlockPreview: options.enableBlockPreview
+                };
+            },
+            apply(tr, value, oldState, newState) {
+                // produce updated state field for this plugin
+                return {
+                    // these values are left unchanged
+                    activeNodeViews: value.activeNodeViews,
+                    macros: value.macros,
+                    enableBlockPreview: value.enableBlockPreview,
+                    // update with the second-most recent cursor pos
+                    prevCursorPos: oldState.selection.from
+                };
+            },
+            /** @todo (8/21/20) implement serialization for math plugin */
+            // toJSON(value) { },
+            // fromJSON(config, value, state){ return {}; }
         },
-        apply(tr, value, oldState, newState) {
-            // produce updated state field for this plugin
-            return {
-                // these values are left unchanged
-                activeNodeViews: value.activeNodeViews,
-                macros: value.macros,
-                // update with the second-most recent cursor pos
-                prevCursorPos: oldState.selection.from
-            };
-        },
-        /** @todo (8/21/20) implement serialization for math plugin */
-        // toJSON(value) { },
-        // fromJSON(config, value, state){ return {}; }
-    },
-    props: {
-        nodeViews: {
-            "math_inline": createMathView(false),
-            "math_display": createMathView(true)
+        props: {
+            nodeViews: {
+                "math_inline": createMathView(false),
+                "math_display": createMathView(true)
+            }
         }
-    }
-};
-const mathPlugin = new prosemirrorState.Plugin(mathPluginSpec);
+    };
+}
+function mathPlugin(options) {
+    return new prosemirrorState.Plugin(mathPluginSpec(options));
+}
 
 /**
  * Note that for some of the `ParseRule`s defined below,
