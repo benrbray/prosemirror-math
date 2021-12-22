@@ -14,6 +14,7 @@ export { makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLA
 
 // optional / experimental plugins
 export { mathSelectPlugin } from "./plugins/math-select";
+export { defaultInlineMathParseRules, defaultBlockMathParseRules } from "./plugins/math-paste-rules"
 
 // commands
 export { insertMathCmd } from "./commands/insert-math-cmd";
