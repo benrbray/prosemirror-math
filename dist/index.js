@@ -221,7 +221,7 @@ class MathView {
             this.dom.setAttribute("title", "");
         }
         catch (err) {
-            if (err instanceof katex.ParseError) {
+            if (err instanceof katex__default['default'].ParseError) {
                 console.error(err);
                 this._mathRenderElt.classList.add("parse-error");
                 this.dom.setAttribute("title", err.toString());
@@ -760,15 +760,17 @@ const mathSelectPlugin = new prosemirrorState.Plugin({
  *
  * @param mathNodeType An instance for either your math_inline or math_display
  *     NodeType.  Must belong to the same schema that your EditorState uses!
+ * @param initialText (optional) The initial source content for the math editor.
  */
-function insertMathCmd(mathNodeType) {
+function insertMathCmd(mathNodeType, initialText = "") {
     return function (state, dispatch) {
         let { $from } = state.selection, index = $from.index();
         if (!$from.parent.canReplaceWith(index, index, mathNodeType)) {
             return false;
         }
         if (dispatch) {
-            let tr = state.tr.replaceSelectionWith(mathNodeType.create({}));
+            let mathNode = mathNodeType.create({}, initialText ? state.schema.text(initialText) : null);
+            let tr = state.tr.replaceSelectionWith(mathNode);
             tr = tr.setSelection(prosemirrorState.NodeSelection.create(tr.doc, $from.pos));
             dispatch(tr);
         }
@@ -841,6 +843,8 @@ exports.REGEX_INLINE_MATH_DOLLARS = REGEX_INLINE_MATH_DOLLARS;
 exports.REGEX_INLINE_MATH_DOLLARS_ESCAPED = REGEX_INLINE_MATH_DOLLARS_ESCAPED;
 exports.createMathSchema = createMathSchema;
 exports.createMathView = createMathView;
+exports.defaultBlockMathParseRules = defaultBlockMathParseRules;
+exports.defaultInlineMathParseRules = defaultInlineMathParseRules;
 exports.insertMathCmd = insertMathCmd;
 exports.makeBlockMathInputRule = makeBlockMathInputRule;
 exports.makeInlineMathInputRule = makeInlineMathInputRule;
