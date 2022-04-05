@@ -3,7 +3,7 @@ import { EditorView, DecorationSet, Decoration } from 'prosemirror-view';
 import { StepMap } from 'prosemirror-transform';
 import { keymap } from 'prosemirror-keymap';
 import { chainCommands, deleteSelection, newlineInCode } from 'prosemirror-commands';
-import katex, { ParseError } from 'katex';
+import katex from 'katex';
 import { Fragment, Schema } from 'prosemirror-model';
 import { InputRule } from 'prosemirror-inputrules';
 
@@ -213,7 +213,7 @@ class MathView {
             this.dom.setAttribute("title", "");
         }
         catch (err) {
-            if (err instanceof ParseError) {
+            if (err instanceof katex.ParseError) {
                 console.error(err);
                 this._mathRenderElt.classList.add("parse-error");
                 this.dom.setAttribute("title", err.toString());
@@ -752,15 +752,17 @@ const mathSelectPlugin = new Plugin({
  *
  * @param mathNodeType An instance for either your math_inline or math_display
  *     NodeType.  Must belong to the same schema that your EditorState uses!
+ * @param initialText (optional) The initial source content for the math editor.
  */
-function insertMathCmd(mathNodeType) {
+function insertMathCmd(mathNodeType, initialText = "") {
     return function (state, dispatch) {
         let { $from } = state.selection, index = $from.index();
         if (!$from.parent.canReplaceWith(index, index, mathNodeType)) {
             return false;
         }
         if (dispatch) {
-            let tr = state.tr.replaceSelectionWith(mathNodeType.create({}));
+            let mathNode = mathNodeType.create({}, initialText ? state.schema.text(initialText) : null);
+            let tr = state.tr.replaceSelectionWith(mathNode);
             tr = tr.setSelection(NodeSelection.create(tr.doc, $from.pos));
             dispatch(tr);
         }
@@ -827,5 +829,5 @@ const mathSerializer = new ProseMirrorTextSerializer({
     }
 });
 
-export { MathView, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, createMathSchema, createMathView, insertMathCmd, makeBlockMathInputRule, makeInlineMathInputRule, mathBackspaceCmd, mathPlugin, mathSchemaSpec, mathSelectPlugin, mathSerializer };
+export { MathView, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, createMathSchema, createMathView, defaultBlockMathParseRules, defaultInlineMathParseRules, insertMathCmd, makeBlockMathInputRule, makeInlineMathInputRule, mathBackspaceCmd, mathPlugin, mathSchemaSpec, mathSelectPlugin, mathSerializer };
 //# sourceMappingURL=index.es.js.map
