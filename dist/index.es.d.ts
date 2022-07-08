@@ -3,7 +3,7 @@
 *  License: MIT (see LICENSE in project root for details)
 *--------------------------------------------------------*/
 // prosemirror imports
-import { MarkSpec, NodeSpec, Schema, SchemaSpec, NodeType, Mark, Slice, MarkType, Fragment } from "prosemirror-model";
+import { MarkSpec, NodeSpec, Schema, SchemaSpec, NodeType, ParseRule, Mark, Slice, MarkType, Fragment } from "prosemirror-model";
 import { Node as ProseNode } from "prosemirror-model";
 import { EditorState, Transaction, PluginKey } from "prosemirror-state";
 import { Plugin as ProsePlugin } from "prosemirror-state";
@@ -168,6 +168,10 @@ declare function makeBlockMathInputRule(pattern: RegExp, nodeType: NodeType, get
  * @todo (6/13/20) math selection rectangles are not quite even with text
  */
 declare const mathSelectPlugin: ProsePlugin;
+// -- MathJax ------------------------------------------- //
+////////////////////////////////////////////////////////////
+declare const defaultInlineMathParseRules: ParseRule[];
+declare const defaultBlockMathParseRules: ParseRule[];
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * Returns a new command that can be used to inserts a new math node at the
@@ -176,8 +180,9 @@ declare const mathSelectPlugin: ProsePlugin;
  *
  * @param mathNodeType An instance for either your math_inline or math_display
  *     NodeType.  Must belong to the same schema that your EditorState uses!
+ * @param initialText (optional) The initial source content for the math editor.
  */
-declare function insertMathCmd(mathNodeType: NodeType): Command;
+declare function insertMathCmd(mathNodeType: NodeType, initialText?: string): Command;
 ////////////////////////////////////////////////////////////////////////////////
 type TypedNode<T extends string, S extends Schema<T, any>> = ProseNode<S> & {
     type: NodeType<S> & {
@@ -211,5 +216,5 @@ declare class ProseMirrorTextSerializer<S extends Schema<any, any>> {
     serializeNode(node: ProseNode<S>): string | null;
 }
 declare const mathSerializer: ProseMirrorTextSerializer<Schema<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">>;
-export { MathView, ICursorPosObserver, mathPlugin, createMathView, IMathPluginState, mathSchemaSpec, createMathSchema, mathBackspaceCmd, makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, mathSelectPlugin, insertMathCmd, mathSerializer, SchemaSpecNodeT, SchemaSpecMarkT, SchemaNodeT, SchemaMarkT };
+export { MathView, ICursorPosObserver, mathPlugin, createMathView, IMathPluginState, mathSchemaSpec, createMathSchema, mathBackspaceCmd, makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, mathSelectPlugin, defaultBlockMathParseRules, defaultInlineMathParseRules, insertMathCmd, mathSerializer, SchemaSpecNodeT, SchemaSpecMarkT, SchemaNodeT, SchemaMarkT };
 //# sourceMappingURL=index.es.d.ts.map
