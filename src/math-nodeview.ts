@@ -99,6 +99,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 
 		this._mathSrcElt = document.createElement("span");
 		this._mathSrcElt.classList.add("math-src");
+		this._mathSrcElt.spellcheck = false;
 		this.dom.appendChild(this._mathSrcElt);
 
 		// ensure 
