@@ -3,7 +3,7 @@ import { EditorView, DecorationSet, Decoration } from 'prosemirror-view';
 import { StepMap } from 'prosemirror-transform';
 import { keymap } from 'prosemirror-keymap';
 import { chainCommands, deleteSelection, newlineInCode } from 'prosemirror-commands';
-import katex from 'katex';
+import { render, ParseError } from 'katex';
 import { Fragment, Schema } from 'prosemirror-model';
 import { InputRule } from 'prosemirror-inputrules';
 
@@ -208,12 +208,12 @@ class MathView {
         }
         // render katex, but fail gracefully
         try {
-            katex.render(texString, this._mathRenderElt, this._katexOptions);
+            render(texString, this._mathRenderElt, this._katexOptions);
             this._mathRenderElt.classList.remove("parse-error");
             this.dom.setAttribute("title", "");
         }
         catch (err) {
-            if (err instanceof katex.ParseError) {
+            if (err instanceof ParseError) {
                 console.error(err);
                 this._mathRenderElt.classList.add("parse-error");
                 this.dom.setAttribute("title", err.toString());

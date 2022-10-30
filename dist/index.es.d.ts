@@ -10,8 +10,6 @@ import { EditorState, Transaction, PluginKey, Command } from "prosemirror-state"
 import { Plugin as ProsePlugin } from "prosemirror-state";
 import { Command as ProseCommand } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
-// katex
-import katex from "katex";
 /*---------------------------------------------------------
 *  Author: Benjamin R. Bray
 *  License: MIT (see LICENSE in project root for details)
