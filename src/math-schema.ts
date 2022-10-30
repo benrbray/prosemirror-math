@@ -27,7 +27,7 @@ import { SchemaSpecMarkT, SchemaSpecNodeT } from "./utils/types";
 interface SchemaSpecJson<N extends string = any, M extends string = any> extends SchemaSpec<N,M> {
     nodes: { [name in N]: NodeSpec };
     marks: { [name in M]: MarkSpec };
-    topNode?: string | null;
+    topNode?: string;
 }
 
 type MathSpecNodeT = SchemaSpecNodeT<typeof mathSchemaSpec>;

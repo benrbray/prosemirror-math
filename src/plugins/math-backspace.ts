@@ -1,5 +1,4 @@
-import { NodeSelection } from "prosemirror-state";
-import { Command as ProseCommand } from "prosemirror-commands";
+import { Command as ProseCommand, NodeSelection } from "prosemirror-state";
 
 export const mathBackspaceCmd:ProseCommand = (state, dispatch) => {
 	// check node before

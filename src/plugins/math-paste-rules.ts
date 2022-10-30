@@ -21,8 +21,8 @@ function getFirstMatch(root: Element, rules: ((root:Element) => false|string)[])
 	return false;
 }
 
-function makeTextFragment<S extends Schema<any, any>>(text: string, schema: S): Fragment<S> {
-	return Fragment.from(schema.text(text) as ProseNode<S>);
+function makeTextFragment<S extends Schema<any, any>>(text: string, schema: S): Fragment {
+	return Fragment.from(schema.text(text) as ProseNode);
 }
 
 ////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ export const wikipediaBlockMathParseRule: ParseRule = {
 		// success!  proceed to `getContent` for further processing
 		return null;
 	},
-	getContent<S extends Schema<any, any>>(p: Node, schema: S): Fragment<S> {
+	getContent<S extends Schema<any, any>>(p: Node, schema: S): Fragment {
 		// search the matched element for a TeX string
 		let match: false|string = matchWikipedia(p as Element);
 		// return a fragment representing the math node's children
@@ -153,7 +153,7 @@ export const wikipediaInlineMathParseRule: ParseRule = {
 		// success!  proceed to `getContent` for further processing
 		return null;
 	},
-	getContent<S extends Schema<any, any>>(p: Node, schema: S): Fragment<S> {
+	getContent<S extends Schema<any, any>>(p: Node, schema: S): Fragment {
 		// search the matched element for a TeX string
 		let match: false|string = matchWikipedia(p as Element);
 		// return a fragment representing the math node's children

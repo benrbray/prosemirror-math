@@ -1,6 +1,5 @@
-import { Command } from "prosemirror-commands";
 import { NodeType } from "prosemirror-model";
-import { EditorState, NodeSelection, Transaction } from "prosemirror-state";
+import { Command, EditorState, NodeSelection, Transaction } from "prosemirror-state";
 
 ////////////////////////////////////////////////////////////////////////////////
 
