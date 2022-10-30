@@ -5,11 +5,11 @@
 
 // prosemirror imports
 import { Node as ProseNode } from "prosemirror-model";
-import { EditorState, Transaction, TextSelection, NodeSelection, PluginKey } from "prosemirror-state";
+import { Command, EditorState, Transaction, TextSelection, NodeSelection, PluginKey } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 import { StepMap } from "prosemirror-transform";
 import { keymap } from "prosemirror-keymap";
-import { newlineInCode, chainCommands, deleteSelection, liftEmptyBlock, Command } from "prosemirror-commands";
+import { newlineInCode, chainCommands, deleteSelection, liftEmptyBlock } from "prosemirror-commands";
 
 // katex
 import katex from "katex";
@@ -137,7 +137,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 
 	// == Updates ======================================= //
 
-	update(node: ProseNode, decorations: Decoration[]) {
+	update(node: ProseNode, decorations: readonly Decoration[]) {
 		if (!node.sameMarkup(this._node)) return false
 		this._node = node;
 
@@ -263,7 +263,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 		if (this._innerView) { throw Error("inner view should not exist!"); }
 
 		// create a nested ProseMirror view
-		this._innerView = new EditorView(this._mathSrcElt, {
+		this._innerView = new EditorView(this._mathSrcElt!, {
 			state: EditorState.create({
 				doc: this._node,
 				plugins: [keymap({

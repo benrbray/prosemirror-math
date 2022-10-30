@@ -1,6 +1,6 @@
 // (https://stackoverflow.com/a/53098695/1444650)
 // import needed to make this a module 
-import { Fragment, Node as ProseNode } from "prosemirror-model";
+import { Fragment, Mark, Node as ProseNode } from "prosemirror-model";
 import { EditorState, Transaction } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 

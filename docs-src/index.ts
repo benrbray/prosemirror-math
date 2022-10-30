@@ -12,8 +12,8 @@ import {
 // ProseMirror imports
 import { DOMParser, Slice } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
-import { EditorState, Transaction, Plugin as ProsePlugin, NodeSelection } from "prosemirror-state";
-import { chainCommands, newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock, deleteSelection, joinForward, selectNodeForward, selectNodeBackward, joinBackward, Command } from "prosemirror-commands";
+import { Command, EditorState, Transaction, Plugin as ProsePlugin, NodeSelection } from "prosemirror-state";
+import { chainCommands, newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock, deleteSelection, joinForward, selectNodeForward, selectNodeBackward, joinBackward } from "prosemirror-commands";
 import { keymap } from "prosemirror-keymap";
 import { inputRules } from "prosemirror-inputrules";
 

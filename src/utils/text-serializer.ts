@@ -4,8 +4,8 @@ import { SchemaMarkT, SchemaNodeT } from "./types";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-type TypedNode<T extends string, S extends Schema<T,any>> = ProseNode<S> & { type: NodeType<S> & { name: T } };
-type TypedMark<T extends string, S extends Schema<T,any>> = Mark<S>      & { type: MarkType<S> & { name: T } };
+type TypedNode<T extends string, S extends Schema<T, any>> = ProseNode & { type: NodeType & { name: T } };
+type TypedMark<T extends string, S extends Schema<T, any>> = Mark & { type: MarkType & { name: T } };
 
 type NodeSerializer<T extends string, S extends Schema<T,any>> = (node: TypedNode<T, S>) => string;
 type MarkSerializer<T extends string, S extends Schema<T,any>> = (mark: TypedMark<T, S>) => string;
@@ -25,7 +25,7 @@ class ProseMirrorTextSerializer<S extends Schema<any, any>> {
 		this.marks = { ...base?.marks, ...fns.marks };
 	}
 
-	serializeFragment(fragment: Fragment<S>): string {
+	serializeFragment(fragment: Fragment): string {
 		// adapted from the undocumented `Fragment.textBetween` function
 		// https://github.com/ProseMirror/prosemirror-model/blob/eef20c8c6dbf841b1d70859df5d59c21b5108a4f/src/fragment.js#L46
 		let blockSeparator = "\n\n";
@@ -59,11 +59,11 @@ class ProseMirrorTextSerializer<S extends Schema<any, any>> {
 		return text;
 	}
 
-	serializeSlice(slice: Slice<S>): string {
+	serializeSlice(slice: Slice): string {
 		return this.serializeFragment(slice.content);
 	}
 
-	serializeNode(node: ProseNode<S>): string|null {
+	serializeNode(node: ProseNode): string | null {
 		// check if one of our custom serializers handles this node
 		let nodeSerializer = this.nodes[node.type.name];
 		if(nodeSerializer !== undefined) {

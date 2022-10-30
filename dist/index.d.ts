@@ -6,13 +6,12 @@
 // prosemirror imports
 import { MarkSpec, NodeSpec, Schema, SchemaSpec, NodeType, ParseRule, Mark, Slice, MarkType, Fragment } from "prosemirror-model";
 import { Node as ProseNode } from "prosemirror-model";
-import { EditorState, Transaction, PluginKey } from "prosemirror-state";
+import { EditorState, Transaction, PluginKey, Command } from "prosemirror-state";
 import { Plugin as ProsePlugin } from "prosemirror-state";
+import { Command as ProseCommand } from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 // katex
 import katex from "katex";
-import { Command } from "prosemirror-commands";
-import { Command as ProseCommand } from "prosemirror-commands";
 /*---------------------------------------------------------
 *  Author: Benjamin R. Bray
 *  License: MIT (see LICENSE in project root for details)
@@ -38,7 +37,7 @@ interface IMathPluginState {
  * @see https://prosemirror.net/docs/ref/#view.EditorProps.nodeViews
  */
 declare function createMathView(displayMode: boolean): (node: ProseNode, view: EditorView, getPos: boolean | (() => number)) => MathView;
-declare const mathPlugin: ProsePlugin<IMathPluginState, any>;
+declare const mathPlugin: ProsePlugin<IMathPluginState>;
 //// INLINE MATH NODEVIEW //////////////////////////////////
 interface ICursorPosObserver {
     /** indicates on which side cursor should appear when this node is selected */
@@ -87,7 +86,7 @@ declare class MathView implements NodeView, ICursorPosObserver {
      */
     ensureFocus(): void;
     // == Updates ======================================= //
-    update(node: ProseNode, decorations: Decoration[]): boolean;
+    update(node: ProseNode, decorations: readonly Decoration[]): boolean;
     updateCursorPos(state: EditorState): void;
     // == Events ===================================== //
     selectNode(): void;
@@ -135,14 +134,14 @@ interface SchemaSpecJson<N extends string = any, M extends string = any> extends
     marks: {
         [name in M]: MarkSpec;
     };
-    topNode?: string | null;
+    topNode?: string;
 }
 // bare minimum ProseMirror schema for working with math nodes
-declare const mathSchemaSpec: SchemaSpecJson<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">;
+declare const mathSchemaSpec: SchemaSpecJson<"math_inline" | "math_display" | "text" | "doc" | "paragraph", "math_select">;
 /**
  * Use the prosemirror-math default SchemaSpec to create a new Schema.
  */
-declare function createMathSchema(): Schema<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">;
+declare function createMathSchema(): Schema<"math_inline" | "math_display" | "text" | "doc" | "paragraph", "math_select">;
 declare const mathBackspaceCmd: ProseCommand;
 ////////////////////////////////////////////////////////////
 // ---- Inline Input Rules ------------------------------ //
@@ -156,8 +155,8 @@ declare const REGEX_INLINE_MATH_DOLLARS_ESCAPED: RegExp;
 // simple inputrule for block math
 declare const REGEX_BLOCK_MATH_DOLLARS: RegExp; //new RegExp("\$\$\s+$", "i");
 ////////////////////////////////////////////////////////////
-declare function makeInlineMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
-declare function makeBlockMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule<any>;
+declare function makeInlineMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule;
+declare function makeBlockMathInputRule(pattern: RegExp, nodeType: NodeType, getAttrs?: (match: string[]) => any): InputRule;
 /**
  * Due to the internals of KaTeX, by default, selecting rendered
  * math will put a box around each individual character of a
@@ -185,13 +184,13 @@ declare const defaultBlockMathParseRules: ParseRule[];
  */
 declare function insertMathCmd(mathNodeType: NodeType, initialText?: string): Command;
 ////////////////////////////////////////////////////////////////////////////////
-type TypedNode<T extends string, S extends Schema<T, any>> = ProseNode<S> & {
-    type: NodeType<S> & {
+type TypedNode<T extends string, S extends Schema<T, any>> = ProseNode & {
+    type: NodeType & {
         name: T;
     };
 };
-type TypedMark<T extends string, S extends Schema<T, any>> = Mark<S> & {
-    type: MarkType<S> & {
+type TypedMark<T extends string, S extends Schema<T, any>> = Mark & {
+    type: MarkType & {
         name: T;
     };
 };
@@ -212,10 +211,10 @@ declare class ProseMirrorTextSerializer<S extends Schema<any, any>> {
             [name in SchemaMarkT<S>]?: MarkSerializer<name, S>;
         };
     }, base?: ProseMirrorTextSerializer<S>);
-    serializeFragment(fragment: Fragment<S>): string;
-    serializeSlice(slice: Slice<S>): string;
-    serializeNode(node: ProseNode<S>): string | null;
+    serializeFragment(fragment: Fragment): string;
+    serializeSlice(slice: Slice): string;
+    serializeNode(node: ProseNode): string | null;
 }
-declare const mathSerializer: ProseMirrorTextSerializer<Schema<"text" | "doc" | "paragraph" | "math_inline" | "math_display", "math_select">>;
+declare const mathSerializer: ProseMirrorTextSerializer<Schema<"math_inline" | "math_display" | "text" | "doc" | "paragraph", "math_select">>;
 export { MathView, ICursorPosObserver, mathPlugin, createMathView, IMathPluginState, mathSchemaSpec, createMathSchema, mathBackspaceCmd, makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED, mathSelectPlugin, defaultInlineMathParseRules, defaultBlockMathParseRules, insertMathCmd, mathSerializer, SchemaSpecNodeT, SchemaSpecMarkT, SchemaNodeT, SchemaMarkT };
 //# sourceMappingURL=index.d.ts.map

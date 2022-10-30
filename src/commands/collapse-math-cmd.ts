@@ -1,5 +1,4 @@
-import { Command } from "prosemirror-commands";
-import { EditorState, TextSelection, Transaction } from "prosemirror-state";
+import { Command, EditorState, TextSelection, Transaction } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 
 /**

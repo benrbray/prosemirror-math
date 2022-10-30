@@ -247,7 +247,6 @@ class MathView {
         }
     }
     openEditor() {
-        var _a;
         if (this._innerView) {
             throw Error("inner view should not exist!");
         }
@@ -296,11 +295,11 @@ class MathView {
         let innerState = this._innerView.state;
         this._innerView.focus();
         // request outer cursor position before math node was selected
-        let maybePos = (_a = this._mathPluginKey.getState(this._outerView.state)) === null || _a === void 0 ? void 0 : _a.prevCursorPos;
+        let maybePos = this._mathPluginKey.getState(this._outerView.state)?.prevCursorPos;
         if (maybePos === null || maybePos === undefined) {
             console.error("[prosemirror-math] Error:  Unable to fetch math plugin state from key.");
         }
-        let prevCursorPos = maybePos !== null && maybePos !== void 0 ? maybePos : 0;
+        let prevCursorPos = maybePos ?? 0;
         // compute position that cursor should appear within the expanded math node
         let innerPos = (prevCursorPos <= this._getPos()) ? 0 : this._node.nodeSize - 2;
         this._innerView.dispatch(innerState.tr.setSelection(TextSelection.create(innerState.doc, innerPos)));
@@ -417,27 +416,24 @@ function makeTextFragment(text, schema) {
  *              alt="..." />
  */
 function texFromMediaWikiFallbackImage(root) {
-    var _a;
     let match = root.querySelector("img.mwe-math-fallback-image-inline[alt]");
-    return ((_a = match === null || match === void 0 ? void 0 : match.getAttribute("alt")) !== null && _a !== void 0 ? _a : false);
+    return (match?.getAttribute("alt") ?? false);
 }
 /**
  * Look for a child node that matches the following template:
  * <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="...">
  */
 function texFromMathML_01(root) {
-    var _a;
     let match = root.querySelector("math[alttext]");
-    return ((_a = match === null || match === void 0 ? void 0 : match.getAttribute("alttext")) !== null && _a !== void 0 ? _a : false);
+    return (match?.getAttribute("alttext") ?? false);
 }
 /**
  * Look for a child node that matches the following template:
  * <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="...">
  */
 function texFromMathML_02(root) {
-    var _a;
     let match = root.querySelector("math annotation[encoding='application/x-tex'");
-    return ((_a = match === null || match === void 0 ? void 0 : match.textContent) !== null && _a !== void 0 ? _a : false);
+    return (match?.textContent ?? false);
 }
 function matchWikipedia(root) {
     let match = getFirstMatch(root, [
@@ -773,8 +769,8 @@ function insertMathCmd(mathNodeType, initialText = "") {
 class ProseMirrorTextSerializer {
     constructor(fns, base) {
         // use base serializer as a fallback
-        this.nodes = Object.assign(Object.assign({}, base === null || base === void 0 ? void 0 : base.nodes), fns.nodes);
-        this.marks = Object.assign(Object.assign({}, base === null || base === void 0 ? void 0 : base.marks), fns.marks);
+        this.nodes = { ...base?.nodes, ...fns.nodes };
+        this.marks = { ...base?.marks, ...fns.marks };
     }
     serializeFragment(fragment) {
         // adapted from the undocumented `Fragment.textBetween` function
@@ -786,7 +782,6 @@ class ProseMirrorTextSerializer {
         let from = 0;
         let to = fragment.size;
         fragment.nodesBetween(from, to, (node, pos) => {
-            var _a;
             // check if one of our custom serializers handles this node
             let serialized = this.serializeNode(node);
             if (serialized !== null) {
@@ -794,7 +789,7 @@ class ProseMirrorTextSerializer {
                 return false;
             }
             if (node.isText) {
-                text += ((_a = node.text) === null || _a === void 0 ? void 0 : _a.slice(Math.max(from, pos) - pos, to - pos)) || "";
+                text += node.text?.slice(Math.max(from, pos) - pos, to - pos) || "";
                 separated = !blockSeparator;
             }
             else if (node.isLeaf && leafText) {

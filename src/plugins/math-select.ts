@@ -4,7 +4,7 @@
  *--------------------------------------------------------*/
 
 // prosemirror imports
-import { EditorState, Transaction, Selection as ProseSelection, Plugin as ProsePlugin } from "prosemirror-state";
+import { EditorState, Transaction, Selection as ProseSelection, Plugin as ProsePlugin, EditorStateConfig } from "prosemirror-state";
 import { DecorationSet, Decoration } from "prosemirror-view";
 import { Fragment, Node as ProseNode } from "prosemirror-model";
 
@@ -22,7 +22,7 @@ const checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
 
 	let result: { start: number, end: number }[] = [];
 
-	content.descendants((node: ProseNode, pos: number, parent: ProseNode) => {
+	content.descendants((node: ProseNode, pos: number, parent: ProseNode | null) => {
 		if (node.type.name == "text") { return false; }
 		if (node.type.name.startsWith("math_")) {
 			result.push({
@@ -49,12 +49,12 @@ const checkSelection = (arg:{ selection:ProseSelection, doc:ProseNode }) => {
  * 
  * @todo (6/13/20) math selection rectangles are not quite even with text
  */
-export const mathSelectPlugin: ProsePlugin = new ProsePlugin({
+export const mathSelectPlugin: ProsePlugin = new ProsePlugin<DecorationSet>({
 	state: {
-		init(config: Object, partialState: EditorState) {
+		init(config: EditorStateConfig, partialState: EditorState) {
 			return checkSelection(partialState);
 		},
-		apply(tr:Transaction, oldState: EditorState) {
+		apply(tr: Transaction, oldState: DecorationSet) {
 			if (!tr.selection || !tr.selectionSet) { return oldState; }
 			let sel = checkSelection(tr);
 			return sel;
