@@ -1,0 +1,44 @@
+{
+  "author": "Benjamin R. Bray",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack",
+    "serve": "webpack serve",
+    "clean": "npx del .parcel-cache; npx del dist"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.11.0",
+    "@types/prosemirror-commands": "^1.0.3",
+    "@types/prosemirror-gapcursor": "^1.0.3",
+    "@types/prosemirror-history": "^1.0.1",
+    "@types/prosemirror-inputrules": "^1.0.2",
+    "@types/prosemirror-keymap": "^1.0.3",
+    "@types/prosemirror-model": "^1.13.0",
+    "@types/prosemirror-state": "^1.2.5",
+    "@types/prosemirror-transform": "^1.1.1",
+    "@types/prosemirror-view": "^1.15.0",
+    "css-loader": "^6.8.1",
+    "del-cli": "^3.0.1",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "ts-loader": "^9.4.4",
+    "typescript": "^4.2.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "dependencies": {
+    "katex": "^0.13.0",
+    "prosemirror-commands": "^1.1.7",
+    "prosemirror-gapcursor": "^1.1.5",
+    "prosemirror-history": "^1.1.3",
+    "prosemirror-inputrules": ">=1.1.2",
+    "prosemirror-keymap": "^1.1.4",
+    "prosemirror-model": "^1.13.3",
+    "prosemirror-state": "^1.3.4",
+    "prosemirror-transform": "^1.2.12",
+    "prosemirror-view": "^1.18.2"
+  }
+}
