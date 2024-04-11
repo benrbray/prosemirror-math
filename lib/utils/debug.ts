@@ -1,7 +1,12 @@
-const warn = (...args: unknown[]) => {
-	console.warn(...args);
-};
+const DEBUG = false;
+
+const ifDebug = (logger: (...args: unknown[]) => void) => {
+	return (...args: unknown[]): void => {
+		if(DEBUG) { logger(...args); }
+	}
+}
 
 export const debug = {
-	warn,
+	warn:  ifDebug(console.warn),
+	error: ifDebug(console.error),
 }
