@@ -16,13 +16,6 @@ import { debug } from "./utils/debug";
 
 //// INLINE MATH NODEVIEW //////////////////////////////////
 
-export interface ICursorPosObserver {
-	/** indicates on which side cursor should appear when this node is selected */
-	cursorSide: "start" | "end";
-	/**  */
-	updateCursorPos(state: EditorState): void;
-}
-
 interface IMathViewOptions {
 	/** Dom element name to use for this NodeView */
 	tagName?: string;
@@ -30,7 +23,7 @@ interface IMathViewOptions {
 	katexOptions?:KatexOptions;
 }
 
-export class MathView implements NodeView, ICursorPosObserver {
+export class MathView implements NodeView {
 
 	// nodeview params
 	private _node: ProseNode;
@@ -53,9 +46,6 @@ export class MathView implements NodeView, ICursorPosObserver {
 	// == Lifecycle ===================================== //
 
 	/**
-	 * @param onDestroy Callback for when this NodeView is destroyed.  
-	 *     This NodeView should unregister itself from the list of ICursorPosObservers.
-	 * 
 	 * Math Views support the following options:
 	 * @option displayMode If TRUE, will render math in display mode, otherwise in inline mode.
 	 * @option tagName HTML tag name to use for this NodeView.  If none is provided,
@@ -131,7 +121,7 @@ export class MathView implements NodeView, ICursorPosObserver {
 
 	// == Updates ======================================= //
 
-	update(node: ProseNode, _decorations: readonly Decoration[]) {
+	update(node: ProseNode, decorations: readonly Decoration[]) {
 		if (!node.sameMarkup(this._node)) return false
 		this._node = node;
 
@@ -158,18 +148,6 @@ export class MathView implements NodeView, ICursorPosObserver {
 		}
 
 		return true;
-	}
-
-	updateCursorPos(state: EditorState): void {
-		const pos = this._getPos()!;
-		const size = this._node.nodeSize;
-		const inPmSelection =
-			(state.selection.from < pos + size)
-			&& (pos < state.selection.to);
-
-		if (!inPmSelection) {
-			this.cursorSide = (pos < state.selection.from) ? "end" : "start";
-		}
 	}
 
 	// == Events ===================================== //
