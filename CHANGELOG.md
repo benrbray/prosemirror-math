@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+* export `defaultInlineMathParseRules`, `defaultBlockMathParseRules`
 * use `vite` and simplify the project configuration
 * removed the unused `ICursorPosObserver` interface and related code
 * removed the unused `onDestroy` parameter to `MathView` 
