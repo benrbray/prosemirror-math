@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+
+	"compilerOptions": {
+		/* unused warnings should not cause build to fail */
+		"noUnusedLocals": false,
+		"noUnusedParameters": false
+	}
+}

@@ -4,19 +4,15 @@
 ![license](https://img.shields.io/github/license/benrbray/prosemirror-math?style=flat-square)
 ![types](https://img.shields.io/npm/types/@benrbray/prosemirror-math?style=flat-square)
 
-> **Note:** This project is still in development, and there may be breaking changes with each release before a `>=1.0.0` version is ready.  Please don't hesitate to report issues or make feature requests!  Contributions welcome!
+> Please don't hesitate to report issues or make feature requests!  Contributions welcome!
 
 ## Overview
 
 The `prosemirror-math` package provides schema and plugins for comfortably writing mathematics with [ProseMirror](https://prosemirror.net/).  Written in TypeScript, with math rendering handled by [KaTeX](https://katex.org/).  You can install the [npm package](https://www.npmjs.com/package/@benrbray/prosemirror-math) or use this repository as a starting point for your own plugin.  The important files in this project are:
 
-* `src/math-schema.ts`: A minimal ProseMirror schema supporting inline and display math nodes.
-* `src/math-nodeview.ts`: A `NodeView` responsible for rendering and editing math nodes.
-* `style/math.css`: Contains all necessary styling for math nodes to display correctly.  This file can easily be modified to achieve your desired appearance.
-
-Additionally, the `docs-src/` contains Aafully-functioning example project that uses webpack generate a static website that includes `prosemirror-math` and all its dependencies.  
-
-* If you want to the example code as a starting point for your own project, pay special attention to the comments in `docs-src/webpack.config.js`.
+* `lib/math-schema.ts`: A minimal ProseMirror schema supporting inline and display math nodes.
+* `lib/math-nodeview.ts`: A `NodeView` responsible for rendering and editing math nodes.
+* `public/prosemirror-math.css`: Contains all necessary styling for math nodes to display correctly.  This file can easily be modified to achieve your desired appearance.
 
 ## Basic Usage  ([try it yourself!](http://benrbray.com/prosemirror-math/))
 
@@ -44,7 +40,7 @@ See the KaTeX documentation for a list of [supported LaTeX commands](https://kat
 
 ## Installation & Setup
 
-Note that `prosemirror-math` is built on top of [ProseMirror](https://prosemirror.net/), which itself has a steep learning curve.  At the very least, you will need to understand [`Schema`](https://prosemirror.net/docs/ref/#model.Document_Schema) and [`Plugins`](https://prosemirror.net/docs/ref/#state.Plugin_System) to integrate `prosemirror-math` into your project.  Start by installing the npm package:
+Note that `prosemirror-math` is built on top of [ProseMirror](https://prosemirror.net/), which itself has a steep learning curve.  At the very least, you will need to understand [`Schema`](https://prosemirror.net/docs/ref/#model.Document_Schema) and [`Plugins`](https://prosemirror.net/docs/ref/#state.Plugin_System) to integrate `prosemirror-math` into your project.  Start by installing the `npm` package:
 
 ```
 npm install @benrbray/prosemirror-math
@@ -59,7 +55,7 @@ node_modules/katex/dist/katex.min.css
 node_modules/@benrbray/prosemirror-math/style/math.css
 ```
 
-If you are using webpack with the `HtmlWebpackPlugin` and `MiniCssExtractPlugin`, you might need to include the CSS files like this:
+If you are using a bundler like `vite` or `webpack`, you may be able to include the CSS files like this:
 
 ```
 import "@benrbray/prosemirror-math/style/math.css";
@@ -68,7 +64,7 @@ import "katex/dist/katex.min.css";
 
 ### Schema
 
-Add `math_inline` and `math_display` nodes to your document schema.  The names are important!  If you modify the schema, be careful not to change any of the values marked `important!` below, or you might run into unexpected behavior!
+Add `math_inline` and `math_display` nodes to your `prosemirror` document schema.  The names are important!  If you modify the schema, be careful not to change any of the values marked `important!` below, or you might run into unexpected behavior!
 
 ```typescript
 import { Schema } from "prosemirror-model";
