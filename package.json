@@ -3,26 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "./dist/prosemirror-math.umd.cjs",
   "module": "./dist/prosemirror-math.js",
-  "exports": {
-    ".": {
-      "import": "./dist/prosemirror-math.js",
-      "require": "./dist/prosemirror-math.umd.cjs"
-    }
-  },
   "types": "dist/prosemirror-math.d.ts",
-  "files": ["dist", "lib"],
+  "files": [
+    "dist",
+    "lib"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build:tsc": "tsc --project tsconfig.build.json",
+    "build": "npm run build:tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/katex": "^0.16.7",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
-  },
-  "dependencies": {
+    "vite": "^5.2.0",
     "@types/node": "^20.12.7"
   },
   "peerDependencies": {
