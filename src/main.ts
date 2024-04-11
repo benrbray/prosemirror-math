@@ -49,7 +49,6 @@ function initEditor(){
 	// plugins
 	let plugins:ProsePlugin[] = [
 		mathPlugin,
-		// mathSelectPlugin, // as of (03/27/20), the selection plugin is not ready for serious use
 		keymap({
 			"Mod-Space" : insertMathCmd(editorSchema.nodes.math_inline),
 			"Backspace": chainCommands(deleteSelection, mathBackspaceCmd, joinBackward, selectNodeBackward),
@@ -74,5 +73,6 @@ function initEditor(){
 		clipboardTextSerializer: (slice) => { return mathSerializer.serializeSlice(slice) }
 	});
 
+	// for debug purposes only
 	(window as any).view = view;
 }
