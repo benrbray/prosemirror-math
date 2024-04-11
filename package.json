@@ -10,9 +10,10 @@
     "lib"
   ],
   "scripts": {
+    "typecheck": "tsc --project tsconfig.build.json",
+    "build:lib": "npm run typecheck && vite --config vite.config.lib.ts build",
+    "build:site": "npm run typecheck && vite build",
     "dev": "vite",
-    "build:tsc": "tsc --project tsconfig.build.json",
-    "build": "npm run build:tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {

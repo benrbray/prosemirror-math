@@ -1,3 +1,6 @@
+dist-site
+dist-npm
+
 # Logs
 logs
 *.log
