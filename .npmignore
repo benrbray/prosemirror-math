@@ -1,6 +1,0 @@
-# remember to keep this in sync with .gitignore!
-.cache
-.vscode
-img/
-docs/
-docs-src/
