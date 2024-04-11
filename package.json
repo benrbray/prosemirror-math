@@ -1,7 +1,7 @@
 {
   "name": "prosemirror-math",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.2",
   "type": "module",
   "module": "./dist/prosemirror-math.js",
   "types": "dist/prosemirror-math.d.ts",
@@ -17,9 +17,11 @@
   },
   "devDependencies": {
     "@types/katex": "^0.16.7",
+    "@types/node": "^20.12.7",
+    "prosemirror-gapcursor": "^1.3.2",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
-    "@types/node": "^20.12.7"
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "peerDependencies": {
     "katex": "^0.16.10",

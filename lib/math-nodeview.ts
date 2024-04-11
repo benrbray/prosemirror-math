@@ -7,7 +7,7 @@ import { keymap } from "prosemirror-keymap";
 import { newlineInCode, chainCommands, deleteSelection } from "prosemirror-commands";
 
 // katex
-import katex, { ParseError, KatexOptions } from "katex";
+import K from "katex";
 import { collapseMathCmd } from "./commands/collapse-math-cmd";
 import { IMathPluginState } from "./math-plugin";
 
@@ -20,7 +20,7 @@ interface IMathViewOptions {
 	/** Dom element name to use for this NodeView */
 	tagName?: string;
 	/** Whether to render this node as display or inline math. */
-	katexOptions?:KatexOptions;
+	katexOptions?: K.KatexOptions;
 }
 
 export class MathView implements NodeView {
@@ -37,7 +37,7 @@ export class MathView implements NodeView {
 	private _innerView: EditorView | undefined;
 
 	// internal state
-	private _katexOptions: KatexOptions;
+	private _katexOptions: K.KatexOptions;
 	private _tagName: string;
 	private _isEditing: boolean;
 	private _mathPluginKey: PluginKey<IMathPluginState>;
@@ -174,6 +174,8 @@ export class MathView implements NodeView {
 	renderMath() {
 		if (!this._mathRenderElt) { return; }
 
+		debug.warn(this._node);
+
 		// get tex string to render
 		let content = this._node.content.firstChild;
 		let texString = "";
@@ -194,11 +196,11 @@ export class MathView implements NodeView {
 
 		// render katex, but fail gracefully
 		try {
-			katex.render(texString, this._mathRenderElt, this._katexOptions);
+			K.render(texString, this._mathRenderElt, this._katexOptions);
 			this._mathRenderElt.classList.remove("parse-error");
 			this.dom.setAttribute("title", "");
 		} catch (err) {
-			if (err instanceof ParseError) {
+			if (err instanceof K.ParseError) {
 				console.error(err);
 				this._mathRenderElt.classList.add("parse-error");
 				this.dom.setAttribute("title", err.toString());

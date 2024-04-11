@@ -1,8 +1,11 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import tsConfigPaths from 'vite-tsconfig-paths'
+
 import pkg from "./package.json";
 
 export default defineConfig({
+	plugins: [tsConfigPaths()],
 	build: {
 		lib: {
 			formats: ["es"],

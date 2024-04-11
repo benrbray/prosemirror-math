@@ -10,13 +10,9 @@
 
 The `prosemirror-math` package provides schema and plugins for comfortably writing mathematics with [ProseMirror](https://prosemirror.net/).  Written in TypeScript, with math rendering handled by [KaTeX](https://katex.org/).  You can install the [npm package](https://www.npmjs.com/package/@benrbray/prosemirror-math) or use this repository as a starting point for your own plugin.  The important files in this project are:
 
-* `src/math-schema.ts`: A minimal ProseMirror schema supporting inline and display math nodes.
-* `src/math-nodeview.ts`: A `NodeView` responsible for rendering and editing math nodes.
-* `style/math.css`: Contains all necessary styling for math nodes to display correctly.  This file can easily be modified to achieve your desired appearance.
-
-Additionally, the `docs-src/` contains Aafully-functioning example project that uses webpack generate a static website that includes `prosemirror-math` and all its dependencies.  
-
-* If you want to the example code as a starting point for your own project, pay special attention to the comments in `docs-src/webpack.config.js`.
+* `lib/math-schema.ts`: A minimal ProseMirror schema supporting inline and display math nodes.
+* `lib/math-nodeview.ts`: A `NodeView` responsible for rendering and editing math nodes.
+* `public/prosemirror-math.css`: Contains all necessary styling for math nodes to display correctly.  This file can easily be modified to achieve your desired appearance.
 
 ## Basic Usage  ([try it yourself!](http://benrbray.com/prosemirror-math/))
 

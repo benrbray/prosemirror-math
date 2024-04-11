@@ -8,8 +8,6 @@ import { EditorView, NodeViewConstructor } from "prosemirror-view";
 
 export interface IMathPluginState {
 	macros: { [cmd:string] : string };
-	/** A list of currently active `NodeView`s, in insertion order. */
-	activeNodeViews: MathView[];
 	/** 
 	 * Used to determine whether to place the cursor in the front- or back-most
 	 * position when expanding a math node, without overriding the default arrow
@@ -53,7 +51,6 @@ let mathPluginSpec:PluginSpec<IMathPluginState> = {
 		init(config, instance){
 			return {
 				macros: {},
-				activeNodeViews: [],
 				prevCursorPos: 0,
 			};
 		},
@@ -61,7 +58,6 @@ let mathPluginSpec:PluginSpec<IMathPluginState> = {
 			// produce updated state field for this plugin
 			return {
 				// these values are left unchanged
-				activeNodeViews : value.activeNodeViews,
 				macros          : value.macros,
 				// update with the second-most recent cursor pos
 				prevCursorPos   : oldState.selection.from
