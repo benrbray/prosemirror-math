@@ -11,6 +11,7 @@ export { mathSchemaSpec, createMathSchema } from "./math-schema";
 // recommended plugins
 export { mathBackspaceCmd } from "./plugins/math-backspace";
 export { makeBlockMathInputRule, makeInlineMathInputRule, REGEX_BLOCK_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS, REGEX_INLINE_MATH_DOLLARS_ESCAPED } from "./plugins/math-inputrules";
+export { defaultInlineMathParseRules, defaultBlockMathParseRules } from "./plugins/math-paste-rules"
 
 // optional / experimental plugins
 export { mathSelectPlugin } from "./plugins/math-select";
