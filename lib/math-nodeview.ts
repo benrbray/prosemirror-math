@@ -37,7 +37,6 @@ export class MathView implements NodeView {
 	private _innerView: EditorView | undefined;
 
 	// internal state
-	cursorSide: "start" | "end";
 	private _katexOptions: KatexOptions;
 	private _tagName: string;
 	private _isEditing: boolean;
@@ -65,7 +64,6 @@ export class MathView implements NodeView {
 		this._mathPluginKey = mathPluginKey;
 
 		// editing state
-		this.cursorSide = "start";
 		this._isEditing = false;
 
 		// options
