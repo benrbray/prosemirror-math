@@ -1,5 +1,5 @@
 {
-  "name": "prosemirror-math",
+  "name": "@benrbray/prosemirror-math",
   "private": true,
   "version": "0.2.2",
   "type": "module",
@@ -22,6 +22,7 @@
     "prosemirror-gapcursor": "^1.3.2",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.8.1",
     "vite-tsconfig-paths": "^4.3.2"
   },
   "peerDependencies": {
