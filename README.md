@@ -52,13 +52,13 @@ First, make sure you include the CSS files for `prosemirror-math` and `katex` on
 
 ```
 node_modules/katex/dist/katex.min.css
-node_modules/@benrbray/prosemirror-math/style/math.css
+node_modules/@benrbray/prosemirror-math/dist/prosemirror-math.css
 ```
 
 If you are using a bundler like `vite` or `webpack`, you may be able to include the CSS files like this:
 
 ```
-import "@benrbray/prosemirror-math/style/math.css";
+import "@benrbray/prosemirror-math/dist/prosemirror-math.css";
 import "katex/dist/katex.min.css";
 ```
 
@@ -181,16 +181,29 @@ cd prosemirror-math
 npm install
 ```
 
-If you want to test using the example code, you should also install the dependencies in the `docs-src/` folder:
-
-```
-cd docs-src
-npm install
-```
-
 From the root directory, you can run the scripts in `package.json`.
 
-* Use `npm run build:dist` to build the `prosemirror-math` package with rollup.
-* Use `npm run build:docs` to build the example code with webpack and generate the static site inside the `docs/` folder.  
-* Use `npm run build` to build the package and website simultaneously.
-* Use `npm run serve:docs` to start a local development server at `localhost:8080` that will watch for changes in the `/docs-src` folder (but not in `/src`).
+* Use `npm run build` to build the `prosemirror-math` package
+* Use `npm run build:site` to generate the static demo website
+* Use `npm run dev` to start a local development server
+
+## Release
+
+> (this section is to help me remember the steps required to publish a new release)
+
+To make a prerelease version for testing:
+
+```bash
+# begin a prerelease
+npm version premajor --preid=rc # from 1.0.0 to 2.0.0-rc.0
+npm version preminor --preid=rc # from 1.0.0 to 1.1.0-rc.0
+npm version prepatch --preid=rc # from 1.0.0 to 1.0.1-rc.0
+
+# increment the prerelease version number
+npm version prerelease # from 2.0.0-rc.0 to 2.0.0-rc.1
+
+# promote the prerelease version
+npm version major # from 2.0.0-rc.1 to 2.0.0
+npm version minor # from 1.1.0-beta.0 to 1.1.0
+npm version patch # from 1.0.1-alpha.0 to 1.0.1
+```
