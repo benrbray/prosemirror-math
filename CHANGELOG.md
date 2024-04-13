@@ -5,12 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [Releases]
+
+### [1.0.0] - 2024-04-13
+
+* `prosemirror-math` is now ESM-only, and no longer builds a CJS version
 * export `defaultInlineMathParseRules`, `defaultBlockMathParseRules`
 * use `vite` and simplify the project configuration
 * removed the unused `ICursorPosObserver` interface and related code
 * removed the unused `onDestroy` parameter to `MathView` 
-
-## [Releases]
 
 ### [0.2.2] - 2021-06-24
 
