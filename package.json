@@ -1,7 +1,7 @@
 {
   "name": "@benrbray/prosemirror-math",
   "version": "1.0.0-rc.0",
-  "private": true,
+  "private": false,
   "author": "Benjamin R. Bray",
   "license": "MIT",
   "description": "Schema and plugins for first-class math support in ProseMirror.",
