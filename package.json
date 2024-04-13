@@ -8,7 +8,10 @@
   "repository": "github:benrbray/prosemirror-math",
 
   "type": "module",
-  "module": "./dist/prosemirror-math.js",
+  "exports": {
+    "." : "./dist/prosemirror-math.js",
+    "./dist/*.css": "./dist/*.css"
+  },
   "types": "dist/prosemirror-math.d.ts",
   "files": [
     "dist",
