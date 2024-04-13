@@ -1,15 +1,14 @@
 {
   "name": "@benrbray/prosemirror-math",
-  "version": "0.2.2",
+  "version": "1.0.0-rc.0",
   "private": true,
   "author": "Benjamin R. Bray",
   "license": "MIT",
   "description": "Schema and plugins for first-class math support in ProseMirror.",
   "repository": "github:benrbray/prosemirror-math",
-
   "type": "module",
   "exports": {
-    "." : "./dist/prosemirror-math.js",
+    ".": "./dist/prosemirror-math.js",
     "./dist/*.css": "./dist/*.css"
   },
   "types": "dist/prosemirror-math.d.ts",
@@ -17,19 +16,15 @@
     "dist",
     "lib"
   ],
-
   "scripts": {
     "build:check": "tsc --project tsconfig.build.json",
     "build:lib": "vite --config vite.config.lib.ts build",
     "build:site": "npm run build:check && vite build",
     "build": "npm run build:Check && npm run build:lib",
-
     "dev": "vite",
     "preview": "vite preview",
-
     "prepare": "npm run build:lib"
   },
-
   "devDependencies": {
     "@types/katex": "^0.16.7",
     "@types/node": "^20.12.7",
