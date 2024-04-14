@@ -8,11 +8,10 @@ import { newlineInCode, chainCommands, deleteSelection } from "prosemirror-comma
 
 // katex
 import K from "katex";
-import { collapseMathCmd } from "./commands/collapse-math-cmd";
-import { IMathPluginState } from "./math-plugin";
 
 // prosemirror-math
-import { debug } from "./utils/debug";
+import { collapseMathCmd } from "./commands/collapse-math-cmd";
+import { IMathPluginState } from "./math-plugin";
 
 //// INLINE MATH NODEVIEW //////////////////////////////////
 
@@ -175,8 +174,6 @@ export class MathView implements NodeView {
 	renderMath() {
 		if (!this._mathRenderElt) { return; }
 
-		debug.warn(this._node);
-
 		// get tex string to render
 		let content = this._node.content.firstChild;
 		let texString = "";
@@ -201,13 +198,9 @@ export class MathView implements NodeView {
 			this._mathRenderElt.classList.remove("parse-error");
 			this.dom.setAttribute("title", "");
 		} catch (err) {
-			if (err instanceof K.ParseError) {
-				console.error(err);
-				this._mathRenderElt.classList.add("parse-error");
-				this.dom.setAttribute("title", err.toString());
-			} else {
-				throw err;
-			}
+			console.error(err);
+			this._mathRenderElt.classList.add("parse-error");
+			this.dom.setAttribute("title", (err as any).toString());
 		}
 	}
 
@@ -233,11 +226,10 @@ export class MathView implements NodeView {
 	}
 
 	openEditor() {
-		if (this._innerView)   { debug.warn("inner view should not exist!"); return; }
-		if (!this._mathSrcElt) { debug.warn("missing mathSrcElt");           return; }
+		if (this._innerView)   { console.warn("[prosemirror-math] editor already open when openEditor was called"); return; }
 
 		// create a nested ProseMirror view
-		this._innerView = new EditorView(this._mathSrcElt, {
+		this._innerView = new EditorView(this._mathSrcElt!, {
 			state: EditorState.create({
 				doc: this._node,
 				plugins: [keymap({
