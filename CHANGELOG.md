@@ -8,8 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Releases]
 
-### [1.0.0] - 2024-04-13
+### [1.0.0] - 2024-04-14
 
+* address some errors related to error handling (PR #71)
 * `prosemirror-math` is now ESM-only, and no longer builds a CJS version
 * export `defaultInlineMathParseRules`, `defaultBlockMathParseRules`
 * use `vite` and simplify the project configuration
