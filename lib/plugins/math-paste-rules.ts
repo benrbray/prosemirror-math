@@ -54,7 +54,7 @@ function texFromMathML_01(root: Element): false|string {
  * <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="...">
  */
 function texFromMathML_02(root: Element): false|string {
-	let match = root.querySelector("math annotation[encoding='application/x-tex'");
+	let match = root.querySelector("math annotation[encoding='application/x-tex']");
 	return (match?.textContent ?? false);
 }
 
