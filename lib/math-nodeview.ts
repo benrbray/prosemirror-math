@@ -1,6 +1,6 @@
 // prosemirror imports
 import { Node as ProseNode } from "prosemirror-model";
-import { EditorState, Transaction, TextSelection, PluginKey } from "prosemirror-state";
+import {EditorState, Transaction, TextSelection, PluginKey, NodeSelection} from "prosemirror-state";
 import { NodeView, EditorView, Decoration } from "prosemirror-view";
 import { StepMap } from "prosemirror-transform";
 import { keymap } from "prosemirror-keymap";
@@ -259,6 +259,10 @@ export class MathView implements NodeView {
 					"ArrowRight" : collapseMathCmd(this._outerView, +1, true),
 					"ArrowUp"    : collapseMathCmd(this._outerView, -1, true),
 					"ArrowDown"  : collapseMathCmd(this._outerView, +1, true),
+					"Mod-a"  : ()=>{
+						this._innerView?.dispatch(this._innerView?.state.tr.setSelection(NodeSelection.create(this._node,0)))
+						return true
+					},
 				})]
 			}),
 			dispatchTransaction: this.dispatchInner.bind(this)
