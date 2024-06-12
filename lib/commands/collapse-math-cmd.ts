@@ -47,14 +47,22 @@ export function collapseMathCmd(
 			// set outer selection to be outside of the nodeview
 			let targetPos: number = (dir > 0) ? outerTo : outerFrom;
 
+			// must return focus to the outer view, otherwise no cursor will appear
+			outerView.focus();
+
 			outerView.dispatch(
 				outerState.tr.setSelection(
 					TextSelection.create(outerState.doc, targetPos)
 				)
 			);
 
-			// must return focus to the outer view, otherwise no cursor will appear
-			outerView.focus();
+			//if innerView at the end of outerView, insert new line at end of outerView
+			if (targetPos == outerState.doc.content.size){
+				outerView.dispatch(
+					outerState.tr.insert(targetPos, outerState.schema.nodes.paragraph.create())
+				)
+			}
+
 		}
 		
 		return true;
