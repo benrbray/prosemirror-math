@@ -45,6 +45,8 @@ math-inline .math-render {
 	cursor:pointer;
 }
 
+math-inline.ProseMirror-selectednode { background-color: #eee; }
+
 math-inline .math-src .ProseMirror {
 	display: inline;
 	/* Necessary to fix FireFox bug with contenteditable, https://bugzilla.mozilla.org/show_bug.cgi?id=1252108 */
