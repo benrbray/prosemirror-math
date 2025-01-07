@@ -20,7 +20,7 @@
     "build:check": "tsc --project tsconfig.build.json",
     "build:lib": "vite --config vite.config.lib.ts build",
     "build:site": "npm run build:check && vite build",
-    "build": "npm run build:Check && npm run build:lib",
+    "build": "npm run build:check && npm run build:lib",
     "dev": "vite",
     "preview": "vite preview",
     "prepare": "npm run build:lib"
